@@ -4,6 +4,7 @@
 
 'use strict';
 
+var desc = "Do statistics with hit nums";
 var _u = require('underscore'),
 	_s = require('underscore.string');
 var async = require('async');
@@ -11,7 +12,8 @@ var async = require('async');
 /**
  * do guess work based on history data statistics
  */
-exports.run = function(hisdatas, opts){
+exports.hitnums = function(hisdatas, opts){
+	console.log(desc);
 	var mappings = _u.object(hisdatas);
 	//console.log(mappings);
 	var hnums = opts.hnums || _u.first(opts._);
@@ -88,7 +90,7 @@ exports.run = function(hisdatas, opts){
 	// });
 	
 	//guess the next nums based on hitted nums & intelligence algorithm
-	console.log('guess the next nums:');
+	//console.log('guess the next nums:');
 	async.waterfall([ 
 		function(callback){
 			// client.smembers('guessset', function(err, replics){

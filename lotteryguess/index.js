@@ -4,7 +4,7 @@ var NAME = __filename;
 var SUMMAY = "TiCai: 11x5";
 
 var Parsers = require('./src/parsers');
-var Statistics = require('./src/statistics/hitnums');
+var Statistics = require('./src/statistics');
 
 function parseOpts(){
 	var optimist = require('optimist');
@@ -13,6 +13,7 @@ function parseOpts(){
 			.options('d', { alias : 'dif', describe: 'difference depth', default: 1})
 			.options('p', { alias : 'pdays', describe: 'period days [1,3,5]', default: 1})
 			.options('t', { alias : 'type', describe: 'lottery type', default: '11x5'})
+			.options('s', { alias : 'statistics', describe: 'lottery statistics', default: 'hitnums'})
 			.usage("This is a caipiao program")
 			.argv;
 	
@@ -38,7 +39,21 @@ function main(opts){
 		process.exit(1);
 	}
 	var parser = Parsers.newParser(opts.type);
-	parser.parse(opts, [Statistics.run]);
+	//console.dir(Statistics);
+	switch(opts.statistics){
+	case 'hitnums':
+		parser.parse(opts, [Statistics.hitnums]);
+		break;
+	case 'groupnums':
+		parser.parse(opts, [Statistics.groupnums]);
+		break;
+	case 'all':
+		parser.parse(opts, [Statistics.hitnums, Statistics.groupnums]);
+		break;
+	default:
+		console.log("Supported hitnums|groupnums statistics now");
+		break;
+	}
 }
 
 main(parseOpts());

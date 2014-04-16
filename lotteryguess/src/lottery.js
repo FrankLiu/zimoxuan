@@ -143,27 +143,3 @@ l.parse = function(html){
 	//console.log(JSON.stringify(hisdatas));
 	return hisdatas;
 }; 
-
-/**
- * do statistics work with history datas
- */
-l.statistics = function(hisdatas, hotnums){
-	var mappings = _u.object(hisdatas);
-	//console.log(mappings);
-	var groupdata = 
-	_u.chain(_u.keys(mappings))
-	.sortBy(function(it){
-		return _u.sortBy(it.split(','), function(num){
-			return parseInt(num);
-		}).join(',') 
-	})
-	.groupBy(function(it){
-		return _u.sortBy(it.split(','), function(num){
-				return parseInt(num);
-			}).join(',');
-	});
-	console.log(groupdata);
-	console.log("total data: " + _u.size(hisdatas));
-	console.log("total group data: " + _u.size(groupdata._wrapped));
-	console.log(_s.repeat('-', 50));
-};

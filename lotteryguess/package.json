@@ -1,0 +1,53 @@
+{
+  "name": "lotteryguess",
+  "description": "Guess TiCai next numbers",
+  "version": "0.2.0",
+  "author": {
+    "name": "Frank Liu",
+    "email": "tonyliu2005@gmail.com"
+  },
+  "keywords": [
+    "lottery",
+	"ticai"
+  ],
+  "dependencies": {
+    "cheerio": "0.12.0",
+    "request": "2.22.0",
+    "underscore": "1.5.1",
+    "underscore.string": "2.3.3",
+    "csv": "0.3.3"
+  },
+  "devDependencies": {
+    "cheerio": "0.12.0",
+    "request": "2.22.0",
+    "underscore": "1.5.1",
+    "underscore.string": "2.3.3",
+    "csv": "0.3.3",
+	"mocha": "1.12.0"
+  },
+  "directories": {
+    "lib": "./src"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "main": "./index.js",
+  "engines": {
+    "node": ">=0.10.13"
+  },
+  "bugs": {
+    "url": "https://github.com/learnboost/mongoose/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LearnBoost/mongoose.git"
+  },
+  "homepage": "http://mongoosejs.com",
+  "readmeFilename": "README.md",
+  "_id": "mongoose@3.6.15",
+  "dist": {
+    "shasum": "c4f0f40f00ffa8cedef9c7921632c5acf819f1bb"
+  },
+  "_from": "mongoose@",
+  "_resolved": "https://registry.npmjs.org/mongoose/-/mongoose-3.6.15.tgz"
+}

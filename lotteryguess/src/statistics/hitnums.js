@@ -16,45 +16,42 @@ exports.hitnums = function(hisdatas, opts){
 	console.log(desc);
 	var mappings = _u.object(hisdatas);
 	//console.log(mappings);
-	var hnums = opts.hnums || _u.first(opts._);
-	if(!hnums){
-		console.log("No hot nums provided!");
+	var guessNums = opts.guessNums || _u.first(opts._);
+	if(!guessNums){
+		console.log("No guess nums provided!");
 	}
-	var hotnumsarr = hnums.split(',');
-	var hnumsize = _u.size(hotnumsarr);
-	var dif = opts.dif;
+	var guessNumsArr = guessNums.split(',');
+	var hnumsize = _u.size(guessNumsArr);
+	var dif = opts.diffDeps;
 	console.log("starting guess the next nums...");
-	console.log("hot nums: " + hnums);
+	console.log("guess nums: " + guessNums);
 	console.log("diffrence depth: " + dif);
 	
 	//group the hitted nums
 	var filterdata = 
-	_u.chain(_u.values(mappings))
+	_u
+	.chain(_u.values(mappings))
 	.filter(function(it){
-		// var sortedit = _u.sortBy(it.split(','), function(num){
-			// return parseInt(num);
-		// }).join(',');
-		
 		//match arbitrary 4 nums or all of hotnums if given hotnums size < 4
 		var intersector = (hnumsize-dif) <= 0 ? 0 : (hnumsize-dif);
-		return _u.size(_u.intersection(hotnumsarr, it.split(','))) >= intersector;
-		//return _u.size(_u.difference(hotnumsarr, it.split(','))) == 1;
+		return _u.size(_u.intersection(guessNumsArr, it.split(','))) >= intersector;
+		//return _u.size(_u.difference(guessNumsArr, it.split(','))) == 1;
 		
 		//below flagments to restrict the guess with all given hot nums
-		// return _u.every(hotnumsarr, function(h){
+		// return _u.every(guessNumsArr, function(h){
 			// return _s.include(it, h);
 		// });
 		
 		//below flagments to restrict the guess with one of hot nums
-		// return _u.some(hotnumsarr, function(h){
+		// return _u.some(guessNumsArr, function(h){
 			// return _s.include(it, h);
 		// });
 	})
-	.sortBy(function(it){
-		return _u.sortBy(it.split(','), function(num){
-			return parseInt(num);
-		}).join(',') 
-	})
+	// .sortBy(function(it){
+		// return _u.sortBy(it.split(','), function(num){
+			// return parseInt(num);
+		// }).join(',') 
+	// })
 	.groupBy(function(it){
 		return _u.sortBy(it.split(','), function(num){
 				return parseInt(num);
@@ -107,8 +104,7 @@ exports.hitnums = function(hisdatas, opts){
 		if(err){
 			console.error(err.message);
 		}
-		console.log(result);
-		// result now equals 'done'    
+		console.log(result);   
 	});
 	console.log(_s.repeat('-', 50));
 };

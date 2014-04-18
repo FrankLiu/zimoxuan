@@ -103,7 +103,7 @@ Parser.prototype.latest = function(duration){
 
 var getFilePath = function(pdays){
 	var fpath;
-	switch(pdays){
+	switch(parseInt(pdays)){
 		case 1:
 			fpath = 'data/11x5/11pick5_latestday.txt';
 			break;
@@ -161,7 +161,7 @@ Parser.prototype.transform = function(file, transformedFile){
  */ 
 Parser.prototype.parse = function(opts, callbacks){
 	var hisdatas = [];
-	var file = getFilePath(opts.pdays);
+	var file = getFilePath(opts.periodDays);
 	var transformedFile = getTransformFile(file);
 	
 	//check file exist

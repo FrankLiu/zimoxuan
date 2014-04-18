@@ -20,6 +20,7 @@ exports.groupnums = function(hisdatas, opts){
 	if(!hnums){
 		console.log("No hot nums provided!");
 	}
+	
 	var groupdata = 
 	_u.chain(_u.values(mappings))
 	.sortBy(function(it){

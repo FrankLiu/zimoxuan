@@ -1,9 +1,6 @@
-/**
+ï»¿/**
  * JiangXi 11x5 parser
  */
-//ÏÂÔØ,ÌáÈ¡Êı¾İ²¢¸üĞÂÖÁÊı¾İ¿â
-//Êı¾İ¿âÖ§³Öcsv£¬sqlite3£¬redis
-
 'use strict';
 
 var NAME = __filename;
@@ -23,7 +20,17 @@ var request = require('request'),
 
 var DEFAULT_ENCODING = "utf-8";
 var NAME = "11x5 lottery parser";
-var ABSENCE_URL = 'http://datachart.500.com/dlc/omit/inc/wmyl.php';
+var YL_BASE_URL = 'http://datachart.500.com/dlc/omit/inc';
+var SMYL_URL = YL_BASE_URL + '/smyl.php';
+var WMYL_URL = YL_BASE_URL + '/wmyl.php';
+var LMYL_URL = YL_BASE_URL + '/lmyl.php';
+var QMYL_URL = YL_BASE_URL + '/qmyl.php';
+var BMYL_URL = YL_BASE_URL + '/bmyl.php';
+var ZJ_HEADER = ['æœŸå·','å¼€å¥–å·ç '];
+var YL_HEADER = [
+	'ç±»å‹','å‡ºç°æ¬¡æ•°','ç†è®ºå‡ºç°æ¬¡æ•°','å‡ºç°é¢‘ç‡','å¹³å‡é—æ¼','æœ€å¤§é—æ¼',
+	'ä¸Šæ¬¡é—æ¼','æœ¬æ¬¡é—æ¼','æ¬²å‡ºå‡ ç‡','å›è¡¥å‡ ç‡','æœ€å¤§é—æ¼æœŸé—´'
+];
 var LATESTDAYS_URL = 'http://datachart.500.com/dlc/zoushi/inc/dlc_fb.php?expect=';
 
 module.exports = Parser;
@@ -33,68 +40,124 @@ function Parser() {
     this._encoding = DEFAULT_ENCODING;
 }
 
-//ÌáÈ¡ÒÅÂ©ºÅÂë
+var convertDuration2PeriodDays = function(duration){
+	if(!duration || duration <= 5) return 1;
+	if(duration > 5 && duration <= 78) return 1;
+	if(duration > 78 && duration <= 234) return 3;
+	if(duration > 234 && duration <= 390) return 5;
+	return 5;
+}
+
+var formatOutput = function(arrs, lstlen, othlen, paddingstr){
+	paddingstr = paddingstr || ' ';
+	lstlen = lstlen || 12;
+	var out = [];
+	_u.each(arrs, function(el, i){
+		//console.log("%s: %s", i, el);
+		if(i == 0){ 
+			out.push(_s.lrpad(el, lstlen, paddingstr));
+		}
+		else{
+			othlen = othlen || (YL_HEADER[i].length + 2);
+			//console.log("%d:length: %s", i, othlen);
+			out.push(_s.lrpad(el, othlen, paddingstr));
+		}
+	});
+	console.log(out.join(''));
+}
+
+//é—æ¼å·ç çš„å­—æ®µåç§°
+Parser.prototype.absenceHeader = function(){
+	return YL_HEADER;
+}
+
+//æå–é—æ¼å·ç 
 Parser.prototype.absence = function(numbers){
-	if(numbers instanceof String){
-		numbers = numbers.split(/[ ,;|]+/);
+	var numsarray = [];
+	//console.log(numbers);
+	if(typeof numbers == "string"){
+		numsarray = numbers.split(/[\s,;]+/);
 	}
-	if(!_u.isArray(numbers)){
-		console.log("numbers should be an array!");
-		return false;
+	if(_u.isArray(numbers)){
+		numsarray = numbers;
 	}
 	
 	var result = {'numbers':'', 'absence': []};
-	numbers = numbers.join(' ');
-	request.get(ABSENCE_URL, 
-		{ /*encoding: 'gbk'*/ }, 
-		function(error, resp, body){
-			//console.log("Response Code: " + resp.statusCode);
-			if (!error && resp.statusCode == 200) {
-				//console.log(body); // Print the whole web page.
-				
-				//parse html and extract the records
-				$ = cheerio.load(body);
-				$('table[id="tdata"] > tr').slice(1).each(function(i, elem){
-					var telem = $(elem).children();
-					if(_u.isEqual(telem.first().text(), numbers)){
-						console.log(numbers);
-						result['numbers'] = numbers;
-						telem.slice(5,4).each(function(i, e){
-							console.log($(e).text());
-							result['absence'].push($(e).text());
-						});
-					}
-				});
-			}
+	numbers = numsarray.sort().join(' ');
+	//console.log(numbers);
+	
+	if(_u.size(numsarray) == 4){
+		var ylurl = SMYL_URL;
+	}
+	else{
+		var ylurl = WMYL_URL;
+	}
+	
+	request(ylurl, {encoding: this._encoding}, function(error, resp, data){
+		//console.log("Response Code: " + resp.statusCode);
+		if (!error && resp.statusCode == 200) {
+			//console.log(data); // Print the whole web page.
+			
+			//parse html and extract the records
+			var $ = cheerio.load(data);
+			var trs = $('table[id=tdata] > tr');
+			//console.log($('table[id=tdata] > tr ').children().length);
+			
+			//console.log(trs.first().find('td > a').length);
+			//TODO: need to figure out the download stream encoding issue
+			//_u.each(trs.first().find('td > a'), function(hr){
+			//console.log( $(hr).text().trim() + '\t');
+			//});
+			formatOutput(YL_HEADER.slice(0,9));
+			trs.slice(1).each(function(i, elem){
+				var tds = $(elem).children();
+				//console.log(tds.first().text());
+				if(_u.isEqual(tds.first().text().trim(), numbers)){
+					//console.log("find matched numbers: " + numbers);
+					result['numbers'] = numbers;
+					tds.slice(0,9).each(function(i, e){
+						result['absence'].push($(e).text());
+					});
+					formatOutput(result['absence'],12,10);
+				}
+			});
 		}
-	);
-	return result;
+	});
 }
 
-//ÌáÈ¡×îĞÂ¿ª½±ºÅÂë
+//æå–å¤šç»„é—æ¼å·ç 
+Parser.prototype.absences = function(multi_numbers){
+	_u.each(multi_numbers, function(numbers){
+		this.absence(numbers);
+	});
+}
+
+//æå–æœ€æ–°å¼€å¥–å·ç 
 Parser.prototype.latest = function(duration){
-	if(!duration || duration != 5 || duration != 3 || duration != 1){
-		duration = 1;
-	}
+	var expect = convertDuration2PeriodDays(duration);
+	LATESTDAYS_URL += expect;
 	var result = [];
-	LATESTDAYS_URL += duration;
-	request.get(LATESTDAYS_URL, 
-		{
-			//encoding: 'gbk'
-		}, 
+	request.get(LATESTDAYS_URL, {encoding: this._encoding }, 
 		function(error, resp, body){
 			//console.log("Response Code: " + resp.statusCode);
 			if (!error && resp.statusCode == 200) {
 				//console.log(body); // Print the whole web page.
-				
 				//parse html and extract the records
-				$ = cheerio.load(body);
-				$('table[id="chartsTable"] > tbody > tr').slice(2).each(function(i, elem){
+				var $ = cheerio.load(body);
+				var trs = $('table[id="chartsTable"] > tbody > tr');
+				formatOutput(ZJ_HEADER);
+				trs.slice(2).each(function(i, elem){
 					var serialNo = $(elem).attr('id');
-					var ballNums = $(elem).find('td[class="chartBall01"]/text()').join(' ');
-					console.log(serialNo + '\t' + ballNums);
+					//console.log(serialNo);
+					if(serialNo && serialNo != 't_sign'){ //ignored non serial number trs 
+						var ballNums = [];
+						$(elem).find('td.chartBall01').each(function(i, ball){
+							ballNums.push($(ball).text());
+						});
+						formatOutput([serialNo, ballNums.join(',')]);
+						result.push({'serialNo': serialNo, 'ballnums': ballNums});
+					}
 				});
-				result.push({'serialNo': serialNo, 'ballnums': ballNums});
 			}
 		}
 	);

@@ -1,74 +1,91 @@
 ﻿//体彩猜猜猜
 //该程序是一个用于猜体育彩票的简单工具
 var NAME = __filename;
-var SUMMAY = "TiCai: 11x5";
+var SUMMAY = "::::  TiCai: %s  ::::";
 
 var Parsers = require('./src/parsers');
 var Statistics = require('./src/statistics');
 var utils = require('./src/utils');
 var program = require('commander');
+var async = require('async');
 
-function print_header(){
-	console.log('-----------------------');
-	console.log('::: ' + SUMMAY + ' :::');
-	console.log('-----------------------');
+function usage(){
+	console.log("Usage: %s -h, --help", NAME);
+	utils.exit(1);
 }
 
 function validateArgs(argv){
-	var result = false;
-	var exitcb = function(){
-		console.log("Usage: %s --help", NAME);
-		process.exit(1);
-	};
-	utils.required(argv.statistics, 'statistics', exitcb);
+	console.log('validate options...');
+	
+	console.dir(argv);
+	if(! argv.type in Parsers.types){
+		usage();
+	}
+	
 	if(argv.statistics == "hitnums" ||  argv.statistics == "all"){
-		utils.required(argv.guessNums, 'guess nums', exitcb);
-		utils.requiredLength(argv.guessNums.split(','), 'guess nums', 4, exitcb);
+		if(!argv.guessNums){
+			console.log("guess nums is required for hitnums statistics");
+			//utils.exit(1);
+		}
+		// async.series([
+			// async.apply(utils.required, argv.guessNums, 'guess nums', usage),
+			// async.apply(utils.requiredLength, argv.guessNums.split(','), 'guess nums', 4, program.help)
+		// ]);
 	}
 	
-	result = utils.required(argv.type, 'lottery type', exitcb);
-	if(result && ! argv.type in Parsers.types){
-		console.log("type is invalid: " + argv.type);
-		result = false;
-	}
-	
-	if(!result){
-		exitcb();
-	}
+	console.log('validate options passed');
 }
 
 
-function main(opts){
-	print_header();
-	console.log("parsing with "+opts.periodDays+" days data ...");
-	console.log("type: " + opts.type);
+function main(argv){
+	console.log('-----------------------');
+	console.log(SUMMAY, argv.type);
+	console.log('-----------------------');
+	console.log("Lottery type: " + argv.type);
+	console.log("Execute program: %s", argv.action);
+	console.log('-----------------------');
 	
-	var parser = Parsers.newParser(opts.type);
-	//console.dir(Statistics);
-	switch(opts.statistics){
-	case 'hitnums':
-		parser.parse(opts, [Statistics.hitnums]);
-		break;
-	case 'groupnums':
-		parser.parse(opts, [Statistics.groupnums]);
-		break;
-	case 'all':
-		parser.parse(opts, Statistics.all);
-		break;
-	default:
-		console.log("Supported hitnums|groupnums|all statistics now");
-		break;
+	if(argv.action == 'statistics'){
+		console.log("parsing with "+argv.periodDays+" days data ...");
+		validateArgs(argv);
+		var parser = Parsers.newParser(argv.type);
+		//console.dir(Statistics);
+		switch(argv.statistics){
+		case 'hitnums':
+			parser.parse(argv, [Statistics.hitnums]);
+			break;
+		case 'groupnums':
+			parser.parse(argv, [Statistics.groupnums]);
+			break;
+		case 'all':
+			parser.parse(argv, Statistics.all);
+			break;
+		default:
+			console.log("Supported hitnums|groupnums|all statistics now");
+			break;
+		}
+	}
+	else if(argv.action == 'latest'){
+		var parser = Parsers.newParser(argv.type);
+		parser.latest(argv.periodDays);
+	}
+	else if(argv.action == 'absence'){
+		var parser = Parsers.newParser(argv.type);
+		parser.absence(argv.guessNums);
+	}
+	else{
+		console.log("supported actions: statistics|transform");
+		process.exit(0);
 	}
 }
 
 var argv = program
-  .version('0.0.1')
-  .option('-s, --statistics <hitnums|groupnums|all>', 'Statistics and Parsing', 'hitnums')
-  .option('-p, --period-days <1,3,5>', 'period days <1,3,5>', 1)
-  .option('-g, --guess-nums <02,04,06,08,10>', 'at least 4 guess numbers')
-  .option('-d, --diff-deps <n>', 'difference depth <1-5>', 1)
+  .version('0.1.1')
   .option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
+  .option('-a, --action <statistics|latest|absence>', 'execute program', 'statistics')
+  .option('-s, --statistics <hitnums|groupnums|all>', 'Statistics and Parsing', 'hitnums')
+  .option('-p, --period-days <1,3,5>|<10-390>', 'period days <1,3,5> or qihao <10-390>', 1)
+  .option('-g, --guess-nums [02,04,06,08,10]', 'at least 4 guess numbers')
+  .option('-d, --diff-deps <n>', 'difference depth <1-5>', 1)
   .parse(process.argv);
-//console.dir(argv);
-validateArgs(argv);
 main(argv);

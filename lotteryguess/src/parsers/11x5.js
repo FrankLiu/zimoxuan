@@ -26,6 +26,13 @@ var WMYL_URL = YL_BASE_URL + '/wmyl.php';
 var LMYL_URL = YL_BASE_URL + '/lmyl.php';
 var QMYL_URL = YL_BASE_URL + '/qmyl.php';
 var BMYL_URL = YL_BASE_URL + '/bmyl.php';
+var YL_URLs = {
+	"4": SMYL_URL,
+	"5": WMYL_URL,
+	"6": LMYL_URL,
+	"7": QMYL_URL,
+	"8": BMYL_URL
+};
 var ZJ_HEADER = ['期号','开奖号码'];
 var YL_HEADER = [
 	'类型','出现次数','理论出现次数','出现频率','平均遗漏','最大遗漏',
@@ -66,6 +73,18 @@ var formatOutput = function(arrs, lstlen, othlen, paddingstr){
 	console.log(out.join(''));
 }
 
+var convertGuessNums2Url = function(guessNums){
+	var size = 5;
+	if(typeof guessNums == "string"){
+		size = _u.size(guessNums.split(/[\s,;]+/));
+	}
+	else{
+		size = _u.size(guessNums);
+	}
+	console.log("absence url: %s", YL_URLs[size]);
+	return YL_URLs[size];
+}
+
 //遗漏号码的字段名称
 Parser.prototype.absenceHeader = function(){
 	return YL_HEADER;
@@ -86,13 +105,7 @@ Parser.prototype.absence = function(numbers){
 	numbers = numsarray.sort().join(' ');
 	//console.log(numbers);
 	
-	if(_u.size(numsarray) == 4){
-		var ylurl = SMYL_URL;
-	}
-	else{
-		var ylurl = WMYL_URL;
-	}
-	
+	var ylurl = convertGuessNums2Url(numsarray);	
 	request(ylurl, {encoding: this._encoding}, function(error, resp, data){
 		//console.log("Response Code: " + resp.statusCode);
 		if (!error && resp.statusCode == 200) {

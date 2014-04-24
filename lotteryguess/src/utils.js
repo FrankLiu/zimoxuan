@@ -7,14 +7,26 @@
 // This seems to be required in Windows (as of Node.js 0.8.7) to ensure that
 // stdout/stderr are flushed before the process exits.
 exports.exit = function(exitCode) {
-  if (process.stdout._pendingWriteReqs || process.stderr._pendingWriteReqs) {
-    process.nextTick(function() {
-      exit(exitCode);
-    });
-  } else {
-    process.exit(exitCode);
-  }
+	//console.log("stdout: %s" + console.dir(process.stdout));
+	//console.log("stderr: " + process.stderr);
+	process.on('exit', function() {
+		process.exit(exitCode);
+	});
 };
+
+//fixed the asynchronized issue in Windows
+//process.stderr and process.stdout are unlike other streams in Node in that writes to them are usually blocking.
+
+// They are blocking in the case that they refer to regular files or TTY file descriptors.
+// In the case they refer to pipes:
+// 	They are blocking in Linux/Unix.
+// 	They are non-blocking like other streams in Windows.
+
+exports.exit2 = function(exitCode){
+    setTimeout(function(){
+		process.exit(exitCode);
+	}, 10);
+}
 
 exports.required = function(arg, argName, cb){
 	if(!arg){

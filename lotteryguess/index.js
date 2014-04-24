@@ -11,21 +11,22 @@ var async = require('async');
 
 function usage(){
 	console.log("Usage: %s -h, --help", NAME);
-	utils.exit(1);
 }
 
 function validateArgs(argv){
 	console.log('validate options...');
 	
-	console.dir(argv);
+	//console.dir(argv);
 	if(! argv.type in Parsers.types){
 		usage();
+		return false;
 	}
 	
-	if(argv.statistics == "hitnums" ||  argv.statistics == "all"){
+	if(argv.action == "absence" || 
+		argv.statistics == "hitnums" ||  argv.statistics == "all"){
 		if(!argv.guessNums){
-			console.log("guess nums is required for hitnums statistics");
-			//utils.exit(1);
+			console.log("guess nums is required!");
+			return false;
 		}
 		// async.series([
 			// async.apply(utils.required, argv.guessNums, 'guess nums', usage),
@@ -34,6 +35,7 @@ function validateArgs(argv){
 	}
 	
 	console.log('validate options passed');
+	return true;
 }
 
 
@@ -45,10 +47,15 @@ function main(argv){
 	console.log("Execute program: %s", argv.action);
 	console.log('-----------------------');
 	
+	if(!validateArgs(argv)){
+		utils.exit(1);
+	}
+	
+	var parser = Parsers.newParser(argv.type);
+	
 	if(argv.action == 'statistics'){
 		console.log("parsing with "+argv.periodDays+" days data ...");
-		validateArgs(argv);
-		var parser = Parsers.newParser(argv.type);
+		
 		//console.dir(Statistics);
 		switch(argv.statistics){
 		case 'hitnums':
@@ -66,12 +73,12 @@ function main(argv){
 		}
 	}
 	else if(argv.action == 'latest'){
-		var parser = Parsers.newParser(argv.type);
 		parser.latest(argv.periodDays);
 	}
 	else if(argv.action == 'absence'){
-		var parser = Parsers.newParser(argv.type);
-		parser.absence(argv.guessNums);
+		setTimeout(function(){
+			parser.absence(argv.guessNums);
+		}, 1000);
 	}
 	else{
 		console.log("supported actions: statistics|transform");

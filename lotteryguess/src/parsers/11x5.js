@@ -103,7 +103,7 @@ Parser.prototype.absence = function(numbers){
 	
 	var result = {'numbers':'', 'absence': []};
 	numbers = numsarray.sort().join(' ');
-	//console.log(numbers);
+	console.log("numbers: %s", numbers);
 	
 	var ylurl = convertGuessNums2Url(numsarray);	
 	request(ylurl, {encoding: this._encoding}, function(error, resp, data){
@@ -139,19 +139,20 @@ Parser.prototype.absence = function(numbers){
 }
 
 //提取多组遗漏号码
-Parser.prototype.absences = function(multi_numbers){
+Parser.prototype.absence = function(multi_numbers){
 	_u.each(multi_numbers, function(numbers){
 		this.absence(numbers);
 	});
 }
 
 //提取最新开奖号码
-Parser.prototype.latest = function(duration){
+Parser.prototype.latest = function(duration, callback){
 	var expect = convertDuration2PeriodDays(duration);
 	LATESTDAYS_URL += expect;
-	var result = [];
+	
 	request.get(LATESTDAYS_URL, {encoding: this._encoding }, 
 		function(error, resp, body){
+			var result = [];
 			//console.log("Response Code: " + resp.statusCode);
 			if (!error && resp.statusCode == 200) {
 				//console.log(body); // Print the whole web page.
@@ -172,9 +173,11 @@ Parser.prototype.latest = function(duration){
 					}
 				});
 			}
+			if(callback && typeof callback == 'function'){
+				callback(result);
+			}
 		}
 	);
-	return result;
 }
 
 var getFilePath = function(pdays){

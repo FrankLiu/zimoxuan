@@ -20,32 +20,28 @@ var request = require('request'),
 
 var DEFAULT_ENCODING = "utf-8";
 var NAME = "11x5 lottery parser";
+var LATESTDAYS_URL = 'http://datachart.500.com/dlc/zoushi/inc/dlc_fb.php?expect=';
 var YL_BASE_URL = 'http://datachart.500.com/dlc/omit/inc';
-var SMYL_URL = YL_BASE_URL + '/smyl.php';
-var WMYL_URL = YL_BASE_URL + '/wmyl.php';
-var LMYL_URL = YL_BASE_URL + '/lmyl.php';
-var QMYL_URL = YL_BASE_URL + '/qmyl.php';
-var BMYL_URL = YL_BASE_URL + '/bmyl.php';
-var YL_URLs = {
-	"4": SMYL_URL,
-	"5": WMYL_URL,
-	"6": LMYL_URL,
-	"7": QMYL_URL,
-	"8": BMYL_URL
+var yl_types = {
+	smyl: YL_BASE_URL + '/smyl.php',
+	wmyl: YL_BASE_URL + '/wmyl.php',
+	lmyl: YL_BASE_URL + '/lmyl.php',
+	qmyl: YL_BASE_URL + '/qmyl.php',
+	bmyl: YL_BASE_URL + '/bmyl.php'
 };
-var ZJ_HEADER = ['期号','开奖号码'];
+var KJ_HEADER = ['期号','开奖号码'];
 var YL_HEADER = [
 	'类型','出现次数','理论出现次数','出现频率','平均遗漏','最大遗漏',
 	'上次遗漏','本次遗漏','欲出几率','回补几率','最大遗漏期间'
 ];
-var LATESTDAYS_URL = 'http://datachart.500.com/dlc/zoushi/inc/dlc_fb.php?expect=';
 
-module.exports = Parser;
-
-function Parser() {
-    this._name = NAME;
-    this._encoding = DEFAULT_ENCODING;
-}
+var sortBys = {
+	code: 'at=code&cha=asc&select=%C8%AB%B2%BF',
+	cxcs: 'at=cxcs&cha=desc&select=%C8%AB%B2%BF',
+	bcyl: 'at=bcyl&cha=desc&select=%C8%AB%B2%BF',
+	ycjl: 'at=ycjl&cha=desc&select=%C8%AB%B2%BF'
+};
+var default_yl_len = 30;
 
 var convertDuration2PeriodDays = function(duration){
 	if(!duration || duration <= 5) return 1;
@@ -81,8 +77,53 @@ var convertGuessNums2Url = function(guessNums){
 	else{
 		size = _u.size(guessNums);
 	}
-	console.log("absence url: %s", YL_URLs[size]);
-	return YL_URLs[size];
+	console.log("absence url: %s", getUrlByYLType(size));
+	return getUrlByYLType(size);
+}
+
+var getUrlByYLType = function(yltype){
+	switch(yltype){
+	case "4"||4||"smyl":
+		return yl_types.smyl;
+	case "5"||5||"wmyl":
+		return yl_types.wmyl;
+	case "6"||6||"lmyl":
+		return yl_types.lmyl;
+	case "7"||7||"qmyl":
+		return yl_types.qmyl;
+	case "8"||8||"bmyl":
+		return yl_types.bmyl;
+	default:
+		return yl_types.wmyl;
+	}
+}
+
+var getParamsBySortType = function(sortType){
+	switch(sortType){
+	case "code":
+		return sortBys.code;
+	case "cxcs":
+		return sortBys.cxcs;
+	case "bcyl":
+		return sortBys.bcyl;
+	case "ycjl":
+		return sortBys.ycjl;
+	default:
+		return sortBys.code;
+	}
+}
+
+var renderYLResults = function(results){
+	formatOutput(YL_HEADER.slice(0,9));
+	console.log('-------------------------------------------------------------------------------------------------------');
+	_u.each(results, function(result, i){
+		formatOutput(result,12,10);
+	});
+}
+
+function Parser() {
+    this._name = NAME;
+    this._encoding = DEFAULT_ENCODING;
 }
 
 //遗漏号码的字段名称
@@ -100,9 +141,8 @@ Parser.prototype.absence = function(numbers){
 	if(_u.isArray(numbers)){
 		numsarray = numbers;
 	}
-	
-	var result = {'numbers':'', 'absence': []};
 	numbers = numsarray.sort().join(' ');
+	var result = {'numbers':numbers, 'absence': []};
 	console.log("numbers: %s", numbers);
 	
 	var ylurl = convertGuessNums2Url(numsarray);	
@@ -121,7 +161,8 @@ Parser.prototype.absence = function(numbers){
 			//_u.each(trs.first().find('td > a'), function(hr){
 			//console.log( $(hr).text().trim() + '\t');
 			//});
-			formatOutput(YL_HEADER.slice(0,9));
+			
+			//extract results
 			trs.slice(1).each(function(i, elem){
 				var tds = $(elem).children();
 				//console.log(tds.first().text());
@@ -131,17 +172,56 @@ Parser.prototype.absence = function(numbers){
 					tds.slice(0,9).each(function(i, e){
 						result['absence'].push($(e).text());
 					});
-					formatOutput(result['absence'],12,10);
 				}
 			});
 		}
+		
+		//print out results
+		renderYLResults([result['absence']]);
+		return result;
 	});
 }
 
 //提取多组遗漏号码
-Parser.prototype.absence = function(multi_numbers){
-	_u.each(multi_numbers, function(numbers){
-		this.absence(numbers);
+Parser.prototype.absences = function(sortBy, yltype, yllen){
+	sortBy = sortBy || "code";
+	yltype = yltype || "wmyl";
+	yllen = yllen || default_yl_len;
+	var urlbase = getUrlByYLType(yltype);
+	var params = getParamsBySortType(sortBy);
+	var ylurl = urlbase + "?" + params;
+	console.log("load absences with url: %s", ylurl);
+	request(ylurl, {encoding: this._encoding}, function(error, resp, data){
+		var results = {};
+		//console.log("Response Code: " + resp.statusCode);
+		if (!error && resp.statusCode == 200) {
+			//console.log(data); // Print the whole web page.
+			
+			//parse html and extract the records
+			var $ = cheerio.load(data);
+			var trs = $('table[id=tdata] > tr');
+			//formatOutput(YL_HEADER.slice(0,9));
+			
+			//extract results
+			trs.slice(1).each(function(i, elem){
+				var result = [];
+				var tds = $(elem).children();
+				//console.log(tds.first().text());
+				tds.slice(0,9).each(function(i, e){
+					result.push($(e).text());
+				});
+				//add to results
+				results[tds.first().text()] = result;
+			});
+		}
+		
+		//print out results
+		var res = _u.values(results);
+		if(sortBy != "code"){
+			res = _u.initial(res, _u.size(res)-yllen);
+		}
+		renderYLResults(res);
+		return results;
 	});
 }
 
@@ -159,7 +239,7 @@ Parser.prototype.latest = function(duration, callback){
 				//parse html and extract the records
 				var $ = cheerio.load(body);
 				var trs = $('table[id="chartsTable"] > tbody > tr');
-				formatOutput(ZJ_HEADER);
+				formatOutput(KJ_HEADER);
 				trs.slice(2).each(function(i, elem){
 					var serialNo = $(elem).attr('id');
 					//console.log(serialNo);
@@ -288,3 +368,5 @@ Parser.prototype.parse = function(opts, callbacks){
 		console.log(error.message);
 	});
 }
+
+module.exports = Parser;

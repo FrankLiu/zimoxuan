@@ -23,7 +23,10 @@ function validateArgs(argv){
 	}
 	
 	if(argv.action == "absence" || 
-		argv.statistics == "hitnums" ||  argv.statistics == "all"){
+		(argv.action == "statistics" && 
+			(argv.statistics == "hitnums" ||  argv.statistics == "all")
+		)
+	){
 		if(!argv.guessNums){
 			console.log("guess nums is required!");
 			return false;
@@ -76,9 +79,10 @@ function main(argv){
 		parser.latest(argv.periodDays);
 	}
 	else if(argv.action == 'absence'){
-		setTimeout(function(){
-			parser.absence(argv.guessNums);
-		}, 1000);
+		parser.absence(argv.guessNums);
+	}
+	else if(argv.action == 'absences'){
+		parser.absences('cxcs');
 	}
 	else{
 		console.log("supported actions: statistics|transform");
@@ -89,7 +93,7 @@ function main(argv){
 var argv = program
   .version('0.1.1')
   .option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
-  .option('-a, --action <statistics|latest|absence>', 'execute program', 'statistics')
+  .option('-a, --action <statistics|latest|absence|absences>', 'execute program', 'latest')
   .option('-s, --statistics <hitnums|groupnums|all>', 'Statistics and Parsing', 'hitnums')
   .option('-p, --period-days <1,3,5>|<10-390>', 'period days <1,3,5> or qihao <10-390>', 1)
   .option('-g, --guess-nums [02,04,06,08,10]', 'at least 4 guess numbers')

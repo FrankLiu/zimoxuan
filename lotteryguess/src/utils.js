@@ -28,23 +28,17 @@ exports.exit2 = function(exitCode){
 	}, 10);
 }
 
-exports.required = function(arg, argName, cb){
+exports.required = function(arg, argName){
 	if(!arg){
-		console.log("Input [%s] is required", argName);
-		if(cb && typeof cb == 'function'){
-			cb(argName);
-		}
+		console.log("[%s] is required!", argName);
 		return false;
 	}
 	return true;
 };
 
-exports.requiredLength = function(arg, argName, length, cb){
+exports.requiredLength = function(arg, argName, length){
 	if(!arg || arg.length < length){
-		console.log("Input [%s] is required and length greater than %d", argName, length);
-		if(cb && typeof cb == 'function'){
-			cb(argName, length);
-		}
+		console.log("[%s] is required and length should >= %d", argName, length);
 		return false;
 	}
 	return true;

@@ -18,6 +18,8 @@ var request = require('request'),
 	cheerio = require('cheerio'),
 	csv = require('csv');
 
+var utils = require('../utils');
+
 var DEFAULT_ENCODING = "utf-8";
 var NAME = "11x5 lottery parser";
 var LATESTDAYS_URL = 'http://datachart.500.com/dlc/zoushi/inc/dlc_fb.php?expect=';
@@ -77,7 +79,7 @@ var convertGuessNums2Url = function(guessNums){
 	else{
 		size = _u.size(guessNums);
 	}
-	console.log("absence url: %s", getUrlByYLType(size));
+	//console.log("absence url: %s", getUrlByYLType(size));
 	return getUrlByYLType(size);
 }
 
@@ -114,19 +116,26 @@ var getParamsBySortType = function(sortType){
 }
 
 var renderKJResults = function(results){
+	utils.log('-', 30);
 	formatOutput(KJ_HEADER);
-	console.log('-----------------------------------');
+	utils.log('-', 30);
 	_u.each(results, function(result, i){
 		formatOutput(result,12,16);
 	});
+	utils.log('-', 30);
+	console.log('Total numbers: %d', _u.size(results));
 }
 
 var renderYLResults = function(results){
+	utils.log('-', 100);
 	formatOutput(YL_HEADER.slice(0,9));
-	console.log('-------------------------------------------------------------------------------------------------------');
+	utils.log('-', 100);
 	_u.each(results, function(result, i){
 		formatOutput(result,12,10);
 	});
+	utils.log('-', 100);
+	console.log('Total numbers: %d', _u.size(results));
+	console.log();
 }
 
 function Parser() {
@@ -154,7 +163,7 @@ Parser.prototype.absence = function(numbers){
 	console.log("numbers: %s", numbers);
 	
 	var ylurl = convertGuessNums2Url(numsarray);	
-	request(ylurl, {encoding: this._encoding}, function(error, resp, data){
+	request(ylurl, {encoding: DEFAULT_ENCODING}, function(error, resp, data){
 		//console.log("Response Code: " + resp.statusCode);
 		if (!error && resp.statusCode == 200) {
 			//console.log(data); // Print the whole web page.
@@ -198,8 +207,8 @@ Parser.prototype.absences = function(sortBy, yltype, yllen){
 	var urlbase = getUrlByYLType(yltype);
 	var params = getParamsBySortType(sortBy);
 	var ylurl = urlbase + "?" + params;
-	console.log("load absences with url: %s", ylurl);
-	request(ylurl, {encoding: this._encoding}, function(error, resp, data){
+	//console.log("load absences with url: %s", ylurl);
+	request(ylurl, {encoding: DEFAULT_ENCODING}, function(error, resp, data){
 		var results = {};
 		//console.log("Response Code: " + resp.statusCode);
 		if (!error && resp.statusCode == 200) {
@@ -238,7 +247,7 @@ Parser.prototype.latest = function(duration, callback){
 	var expect = convertDuration2PeriodDays(duration);
 	LATESTDAYS_URL += expect;
 	
-	request.get(LATESTDAYS_URL, {encoding: this._encoding }, 
+	request.get(LATESTDAYS_URL, {encoding: DEFAULT_ENCODING }, 
 		function(error, resp, body){
 			var results = {};
 			//console.log("Response Code: " + resp.statusCode);
@@ -266,7 +275,7 @@ Parser.prototype.latest = function(duration, callback){
 				});
 			}
 			
-			renderKJResults(results);
+			renderKJResults(_u.values(results).splice(-duration));
 			if(callback && typeof callback == 'function'){
 				callback(result);
 			}

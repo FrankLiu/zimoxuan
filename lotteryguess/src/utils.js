@@ -28,6 +28,16 @@ exports.exit2 = function(exitCode){
 	}, 10);
 }
 
+exports.log = function(str, times){
+	var origstr = str;
+	if(times && times > 1){
+		for(var i=0; i<times; i++){
+			str = str.concat(origstr);
+		}
+	}
+	console.log(str);
+}
+
 exports.required = function(arg, argName){
 	if(!arg){
 		console.log("[%s] is required!", argName);

@@ -31,24 +31,19 @@ function validateArgs(argv){
 			console.log("guess nums is required!");
 			return false;
 		}
-		// async.series([
-			// async.apply(utils.required, argv.guessNums, 'guess nums', usage),
-			// async.apply(utils.requiredLength, argv.guessNums.split(','), 'guess nums', 4, program.help)
-		// ]);
 	}
 	
 	console.log('validate options passed');
 	return true;
 }
 
-
 function main(argv){
-	console.log('-----------------------');
+	utils.log('-', 22);
 	console.log(SUMMAY, argv.type);
-	console.log('-----------------------');
+	utils.log('-', 22);
 	console.log("Lottery type: " + argv.type);
 	console.log("Execute program: %s", argv.action);
-	console.log('-----------------------');
+	utils.log('-', 22);
 	
 	if(!validateArgs(argv)){
 		utils.exit(1);
@@ -82,9 +77,11 @@ function main(argv){
 		parser.absence(argv.guessNums);
 	}
 	else if(argv.action == 'absences'){
-		parser.absences('cxcs');
-		console.log("--------------------------------------------");
-		parser.absences('bcyl');
+		async.series([
+			parser.absences('bcyl', 'wmyl', 10),
+			//async.apply(console.log, "--------------------------------------------"),
+			parser.absences('cxcs', 'wmyl', 20)
+		]);
 	}
 	else{
 		console.log("supported actions: statistics|transform");
@@ -97,7 +94,7 @@ var argv = program
   .option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
   .option('-a, --action <statistics|latest|absence|absences>', 'execute program', 'latest')
   .option('-s, --statistics <hitnums|groupnums|all>', 'Statistics and Parsing', 'hitnums')
-  .option('-p, --period-days <1,3,5>|<10-390>', 'period days <1,3,5> or qihao <10-390>', 1)
+  .option('-p, --period-days <1,3,5>|<10-390>', 'period days <1,3,5> or duration <10-390>', 1)
   .option('-g, --guess-nums [02,04,06,08,10]', 'at least 4 guess numbers')
   .option('-d, --diff-deps <n>', 'difference depth <1-5>', 1)
   .parse(process.argv);

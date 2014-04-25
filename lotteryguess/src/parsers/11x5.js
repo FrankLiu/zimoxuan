@@ -113,6 +113,14 @@ var getParamsBySortType = function(sortType){
 	}
 }
 
+var renderKJResults = function(results){
+	formatOutput(KJ_HEADER);
+	console.log('-----------------------------------');
+	_u.each(results, function(result, i){
+		formatOutput(result,12,16);
+	});
+}
+
 var renderYLResults = function(results){
 	formatOutput(YL_HEADER.slice(0,9));
 	console.log('-------------------------------------------------------------------------------------------------------');
@@ -232,15 +240,16 @@ Parser.prototype.latest = function(duration, callback){
 	
 	request.get(LATESTDAYS_URL, {encoding: this._encoding }, 
 		function(error, resp, body){
-			var result = [];
+			var results = {};
 			//console.log("Response Code: " + resp.statusCode);
 			if (!error && resp.statusCode == 200) {
 				//console.log(body); // Print the whole web page.
 				//parse html and extract the records
 				var $ = cheerio.load(body);
 				var trs = $('table[id="chartsTable"] > tbody > tr');
-				formatOutput(KJ_HEADER);
+				//formatOutput(KJ_HEADER);
 				trs.slice(2).each(function(i, elem){
+					var result = [];
 					var serialNo = $(elem).attr('id');
 					//console.log(serialNo);
 					if(serialNo && serialNo != 't_sign'){ //ignored non serial number trs 
@@ -248,11 +257,16 @@ Parser.prototype.latest = function(duration, callback){
 						$(elem).find('td.chartBall01').each(function(i, ball){
 							ballNums.push($(ball).text());
 						});
-						formatOutput([serialNo, ballNums.join(',')]);
-						result.push({'serialNo': serialNo, 'ballnums': ballNums});
+						//formatOutput([serialNo, ballNums.join(',')]);
+						//result.push({'serialNo': serialNo, 'ballnums': ballNums});
+						result.push(serialNo);
+						result.push(ballNums.join(','));
+						results[serialNo] = result;
 					}
 				});
 			}
+			
+			renderKJResults(results);
 			if(callback && typeof callback == 'function'){
 				callback(result);
 			}

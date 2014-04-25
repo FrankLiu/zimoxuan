@@ -83,6 +83,8 @@ function main(argv){
 	}
 	else if(argv.action == 'absences'){
 		parser.absences('cxcs');
+		console.log("--------------------------------------------");
+		parser.absences('bcyl');
 	}
 	else{
 		console.log("supported actions: statistics|transform");

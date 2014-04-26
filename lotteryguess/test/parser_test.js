@@ -1,5 +1,5 @@
 ﻿var assert = require("assert")
-var Parser = require("../src/parsers/11x5");
+var Parser = require("../lib/parsers/11x5");
 
 var parser = new Parser();
 parser.latest(20);

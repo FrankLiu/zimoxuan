@@ -2,10 +2,11 @@
 //该程序是一个用于猜体育彩票的简单工具
 var NAME = __filename;
 var SUMMAY = "::::  TiCai: %s  ::::";
+var version = require('./package.json').version;
 
-var Parsers = require('./src/parsers');
-var Statistics = require('./src/statistics');
-var utils = require('./src/utils');
+var Parsers = require('./lib/parsers');
+var Statistics = require('./lib/statistics');
+var utils = require('./lib/utils');
 var program = require('commander');
 var async = require('async');
 
@@ -57,10 +58,10 @@ function main(argv){
 		//console.dir(Statistics);
 		switch(argv.statistics){
 		case 'hitnums':
-			parser.parse(argv, [Statistics.hitnums]);
+			parser.parse(argv, [Statistics.hits]);
 			break;
 		case 'groupnums':
-			parser.parse(argv, [Statistics.groupnums]);
+			parser.parse(argv, [Statistics.groups]);
 			break;
 		case 'all':
 			parser.parse(argv, Statistics.all);
@@ -90,7 +91,7 @@ function main(argv){
 }
 
 var argv = program
-  .version('0.1.1')
+  .version(version)
   .option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
   .option('-a, --action <statistics|latest|absence|absences>', 'execute program', 'latest')
   .option('-s, --statistics <hitnums|groupnums|all>', 'Statistics and Parsing', 'hitnums')

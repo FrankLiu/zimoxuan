@@ -1,7 +1,7 @@
 {
   "name": "lotteryguess",
   "description": "Guess TiCai next numbers",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Frank Liu",
     "email": "tonyliu2005@gmail.com"

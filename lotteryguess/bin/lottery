@@ -1,0 +1,156 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+var version = require('../package.json').version,
+	Parsers = require('../lib/parsers'),
+	Statistics = require('../lib/statistics'),
+	utils = require('../lib/utils'),
+	
+	async = require('async'),
+	program = require('commander');
+
+var LOTTERY_DESCRIPTION = "~~~~~~~~~~TiCai: %s~~~~~~~~~~";
+var DEFAULT_HADER_LENGTH = 30;
+
+var	DEFAULT_LOTTERY_TYPE = '11x5',
+	DEFAULT_STRATEGY = 'hits',
+	DEFAULT_PERIOD_DAYS = 1,
+	DEFAULT_DURATION = 10,
+	DEFAULT_DIFFERENCE_DEPTH = 1;
+	
+var COMMAND_ERROR = 'Illegal command format. Use `lottery --help` to get more info.\n';
+	
+program.version(version);
+program.command('statistics')
+	.description('statistics history numbers, sort or group them')
+	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
+	.option('-s, --strategy <hits,groups>', 'Statistics strategy', 'hits')
+	.option('-p, --period-days <1,3,5>>', 'period days, supportted 1,3,5', 1)
+	.option('-d, --diff-deps <n>', 'difference depth <1-5>', 1)
+	.action(function(){
+		var args = [].slice.call(arguments, 0);
+		var opts = args[args.length - 1];
+		if(opts.strategy == 'hits'){
+			opts.guessNums = args.slice(0, -1)[0];
+		}
+		statistics(opts);
+	});
+
+program.command('latest')
+	.description('list the latest(KJ) numbers')
+	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
+	//.option('-p, --period-days <1,3,5>>', 'period days, supportted 1,3,5', 1)
+	.option('-d, --duration <1-390>', 'duration')
+	.action(function(opts){
+		latest(opts);
+	});
+
+program.command('absence <number>')
+	.description('list the absence(YL) information for given number')
+	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
+	//.option('-p, --period-days <1,3,5>>', 'period days, supportted 1,3,5', 1)
+	//.option('-d, --duration <1-390>', 'duration')
+	.action(function(){
+		var args = [].slice.call(arguments, 0);
+		var opts = args[args.length - 1];
+		opts.number = args.slice(0, -1)[0];
+		absence(opts);
+	});
+	
+program.command('absences')
+	.description('list the absence(YL) numbers, sort with cxcs,bcyl,ycjl')
+	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
+	//.option('-p, --period-days <1,3,5>>', 'period days, supportted 1,3,5', 1)
+	.option('-s, --sort <cxcs|bcyl|ycjl>', 'sort by cxcs,bcyl,ycjl', 'ycjl')
+	.option('-y, --yltype <smyl|wmyl|lmyl|qmyl>', 'YL type', 'wmyl')
+	.option('-d, --duration <1-390>', 'duration', 10)
+	.action(function(opts){
+		absences(opts);
+	});
+	
+program.command('*')
+  .action(function() {
+    console.log(COMMAND_ERROR);
+  });
+  
+program.parse(process.argv);
+
+/**
+ * Print the lottery header
+ *
+ */
+function header(type, action){
+	utils.log('-', DEFAULT_HADER_LENGTH);
+	console.log(LOTTERY_DESCRIPTION, type);
+	//utils.log('-', DEFAULT_HADER_LENGTH);
+	console.log("Lottery type: " + type);
+	console.log("Execute program: %s", action);
+	utils.log('-', DEFAULT_HADER_LENGTH);
+}
+
+/**
+ * List the latest KJ numbers.
+ *
+ */
+function latest(opts) {
+  header(opts.type, 'latest');
+  var parser = Parsers.newParser(opts.type);
+  parser.latest(opts.duration);
+}
+
+/**
+ * List the absences(YL) numbers.
+ *
+ */
+function absences(opts) {
+	header(opts.type, 'absences');
+	var parser = Parsers.newParser(opts.type);
+	parser.absences(opts.sort, opts.yltype, opts.duration);
+}
+
+/**
+ * List the absence(YL) for given number.
+ *
+ */
+function absence(opts) {
+	header(opts.type, 'absence');
+	var parser = Parsers.newParser(opts.type);
+	parser.absence(opts.number);
+}
+
+/**
+ * Statistics history numbers.
+ *
+ */
+function statistics(opts) {
+	header(opts.type, 'statistics ['+opts.strategy+']');
+	var parser = Parsers.newParser(opts.type);
+	
+	console.log("parsing with "+opts.periodDays+" days data ...");
+	switch(opts.strategy){
+	case 'hits':
+		parser.parse(opts, [Statistics.hits]);
+		break;
+	case 'groups':
+		parser.parse(opts, [Statistics.groups]);
+		break;
+	case 'all':
+		parser.parse(opts, Statistics.all);
+		break;
+	default:
+		console.log("Supported strategies: hits,groups,all");
+		break;
+	}
+}
+
+/**
+ * Exit with the given `str`.
+ *
+ * @param {String} str
+ */
+function abort(str) {
+  console.error(str);
+  process.exit(1);
+}

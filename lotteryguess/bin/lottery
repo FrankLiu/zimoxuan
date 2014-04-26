@@ -12,7 +12,7 @@ var version = require('../package.json').version,
 	program = require('commander');
 
 var LOTTERY_DESCRIPTION = "~~~~~~~~~~TiCai: %s~~~~~~~~~~";
-var DEFAULT_HADER_LENGTH = 30;
+var DEFAULT_HADER_LENGTH = 36;
 
 var	DEFAULT_LOTTERY_TYPE = '11x5',
 	DEFAULT_STRATEGY = 'hits',

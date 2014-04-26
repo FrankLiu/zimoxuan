@@ -3,7 +3,7 @@
 var hits = require('./hits').hits,
 	groups = require('./groups').groups;
 	
-module.exports = {
+exports = module.exports = {
 	'hits': hits, 
 	'groups': groups,
 	'all': [hits, groups]

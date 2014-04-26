@@ -4,7 +4,6 @@
 
 'use strict';
 
-var desc = "Do statistics with group nums";
 var _u = require('underscore'),
 	_s = require('underscore.string');
 var async = require('async');
@@ -13,7 +12,6 @@ var async = require('async');
  * do statistics work with history datas
  */
 exports.groups = function(hisdatas, opts){
-	console.log(desc);
 	var mappings = _u.object(hisdatas);
 	//console.log(mappings);
 	var hnums = opts.hnums || _u.first(opts._);

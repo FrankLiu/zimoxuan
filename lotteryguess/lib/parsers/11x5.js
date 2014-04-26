@@ -161,7 +161,7 @@ Parser.prototype.absence = function(numbers){
 		//console.log('number is array: %s', numsarray);
 	}
 	
-	var numbstr = numsarray.join(' ');
+	var numbstr = numsarray.sort().join(' ');
 	//console.log("numb as string: %s", numbstr);
 	
 	var ylurl = convertGuessNums2Url(numbstr);

@@ -246,9 +246,15 @@ Parser.prototype.absences = function(sortBy, yltype, yllen){
 
 //提取最新开奖号码
 Parser.prototype.latest = function(duration, callback){
-	var expect = convertDuration2PeriodDays(duration);
+	if(duration == '1d' || duration == '3d' || duration == '5d'){
+		var expect = parseInt(duration);
+	}
+	else{
+		var expect = convertDuration2PeriodDays(duration);
+	}
 	LATESTDAYS_URL += expect;
 	
+	console.log("load latest data with url: %s", LATESTDAYS_URL);
 	request.get(LATESTDAYS_URL, {encoding: DEFAULT_ENCODING }, 
 		function(error, resp, body){
 			var results = {};
@@ -277,12 +283,12 @@ Parser.prototype.latest = function(duration, callback){
 				});
 			}
 			
-			if(duration >= 10){
+			if(duration > 5){
 				results = _u.values(results).splice(-duration);
 			}
 			renderKJResults(results);
 			if(callback && typeof callback == 'function'){
-				callback(result);
+				callback(results);
 			}
 		}
 	);

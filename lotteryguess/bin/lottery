@@ -7,7 +7,9 @@ var version = require('../package.json').version,
 	Parsers = require('../lib/parsers'),
 	Statistics = require('../lib/statistics'),
 	utils = require('../lib/utils'),
-	
+
+	fs = require('fs'),
+	_u = require('underscore'),
 	async = require('async'),
 	program = require('commander');
 
@@ -26,7 +28,7 @@ program.version(version);
 program.command('statistics')
 	.description('statistics history numbers, sort or group them')
 	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
-	.option('-s, --strategy <hits,groups>', 'Statistics strategy', 'hits')
+	.option('-s, --strategy <hits,groups>', 'Statistics strategy', 'groups')
 	.option('-p, --period-days <1,3,5>>', 'period days, supportted 1,3,5', 1)
 	.option('-d, --diff-deps <n>', 'difference depth <1-5>', 1)
 	.action(function(){
@@ -38,6 +40,14 @@ program.command('statistics')
 		statistics(opts);
 	});
 
+program.command('download')
+	.description('list the latest(KJ) numbers')
+	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
+	.option('-p, --period-days <1,3,5>>', 'period days, supportted 1d,3d,5d', '1d')
+	.action(function(opts){
+		download(opts);
+	});
+	
 program.command('latest')
 	.description('list the latest(KJ) numbers')
 	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
@@ -99,6 +109,31 @@ function latest(opts) {
   var parser = Parsers.newParser(opts.type);
   parser.latest(opts.duration);
 }
+
+/**
+ * Download the latest KJ numbers.
+ *
+ */
+function download(opts) {
+  header(opts.type, 'download');
+  var parser = Parsers.newParser(opts.type);
+  if(opts.periodDays == '1d'){
+	var fpath = 'data/11x5/11pick5_latestday.out';
+  }
+  else{
+	var fpath = 'data/11x5/11pick5_latest'+parseInt(opts.periodDays)+'days.out';
+  }
+  opts.duration = 78*parseInt(opts.periodDays);
+  parser.latest(opts.duration, function(results){
+	var output = "";
+	_u.each(results, function(result){
+		output += result[0] + '\t' + result[1] + "\n";
+	});
+	fs.writeFileSync(fpath, output);
+	console.log("Downloaded latest [" + opts.duration + "] data to [" + fpath + "].");
+  });
+}
+
 
 /**
  * List the absences(YL) numbers.

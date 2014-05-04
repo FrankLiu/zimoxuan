@@ -84,7 +84,8 @@ var convertGuessNums2Url = function(guessNums){
 }
 
 var getUrlByYLType = function(yltype){
-	switch(yltype){
+	if(yl_types[yltype]) return yl_types[yltype];
+	switch(parseInt(yltype)){
 	case 4:
 		return yl_types.smyl;
 	case 5:
@@ -207,10 +208,11 @@ Parser.prototype.absences = function(sortBy, yltype, yllen){
 	sortBy = sortBy || "code";
 	yltype = yltype || "wmyl";
 	yllen = yllen || default_yl_len;
+	console.log("yl type: %s", yltype);
 	var urlbase = getUrlByYLType(yltype);
 	var params = getParamsBySortType(sortBy);
 	var ylurl = urlbase + "?" + params;
-	//console.log("load absences with url: %s", ylurl);
+	console.log("load absences with url: %s", ylurl);
 	request(ylurl, {encoding: DEFAULT_ENCODING}, function(error, resp, data){
 		var results = {};
 		//console.log("Response Code: " + resp.statusCode);

@@ -11,7 +11,8 @@ var version = require('../package.json').version,
 	fs = require('fs'),
 	_u = require('underscore'),
 	async = require('async'),
-	program = require('commander');
+	program = require('commander'),
+	colors = require('colors');
 
 var LOTTERY_DESCRIPTION = "~~~~~~~~~~TiCai: %s~~~~~~~~~~";
 var DEFAULT_HADER_LENGTH = 36;
@@ -22,8 +23,20 @@ var	DEFAULT_LOTTERY_TYPE = '11x5',
 	DEFAULT_DURATION = 10,
 	DEFAULT_DIFFERENCE_DEPTH = 1;
 	
-var COMMAND_ERROR = 'Illegal command format. Use `lottery --help` to get more info.\n';
-	
+var COMMAND_ERROR = 'Illegal command. Use `lottery --help` to get more info.\n';
+
+colors.setTheme({
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'grey',
+  info: 'green',
+  data: 'grey',
+  help: 'cyan',
+  warn: 'yellow',
+  debug: 'blue',
+  error: 'red'
+});
 program.version(version);
 program.command('statistics')
 	.description('statistics history numbers, sort or group them')
@@ -73,7 +86,7 @@ program.command('absences')
 	.description('list the absence(YL) numbers, sort with cxcs,bcyl,ycjl')
 	.option('-t, --type <11x5|6p1>', 'lottery type', '11x5')
 	//.option('-p, --period-days <1,3,5>>', 'period days, supportted 1,3,5', 1)
-	.option('-s, --sort <cxcs|bcyl|ycjl>', 'sort by cxcs,bcyl,ycjl', 'ycjl')
+	.option('-s, --sort <cxcs|bcyl|ycjl>', 'sort by cxcs,bcyl,ycjl', 'bcyl')
 	.option('-y, --yltype <smyl|wmyl|lmyl|qmyl>', 'YL type', 'wmyl')
 	.option('-d, --duration <1-390>', 'duration', 10)
 	.action(function(opts){
@@ -82,7 +95,7 @@ program.command('absences')
 	
 program.command('*')
   .action(function() {
-    console.log(COMMAND_ERROR);
+    console.log(COMMAND_ERROR.error);
   });
   
 program.parse(process.argv);

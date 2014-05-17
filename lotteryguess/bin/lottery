@@ -48,7 +48,7 @@ program.command('statistics')
 		var args = [].slice.call(arguments, 0);
 		var opts = args[args.length - 1];
 		if(opts.strategy == 'hits'){
-			opts.guessNums = args.slice(0, -1)[0];
+			opts.guessNums = utils.padZero(args.slice(0, -1)[0], 2);
 		}
 		statistics(opts);
 	});
@@ -78,7 +78,7 @@ program.command('absence <number>')
 	.action(function(){
 		var args = [].slice.call(arguments, 0);
 		var opts = args[args.length - 1];
-		opts.number = args.slice(0, -1)[0];
+		opts.number = utils.padZero(args.slice(0, -1)[0], 2);
 		absence(opts);
 	});
 	

@@ -4,6 +4,9 @@
 
 'use strict';
 
+var _u = require('underscore'),
+	_s = require('underscore.string');
+
 // This seems to be required in Windows (as of Node.js 0.8.7) to ensure that
 // stdout/stderr are flushed before the process exits.
 exports.exit = function(exitCode) {
@@ -54,3 +57,18 @@ exports.requiredLength = function(arg, argName, length){
 	return true;
 };
 
+exports.pad = function(str, len, padstr){
+	if(!_s.contains(str, ",")){
+		return _s.pad(str, len, padstr);
+	}
+	
+	return _u.map(str.split(","), function(num){
+			return _s.pad(num, len, padstr);
+		})
+		.join(",");
+	
+};
+
+exports.padZero = function(str, len){
+	return exports.pad(str, len, '0');
+};

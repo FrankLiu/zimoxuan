@@ -13,26 +13,43 @@ var Stats = require('./stats');
 /**
  * do statistics work with history datas
  */
-exports.groups = function(hisdatas, dif){
+exports.groups = function(hisdatas, opts){
 	var mappings = _u.object(hisdatas);
 	//console.log(mappings);
-	if(!dif) dif = 0;
-	if(dif > 4) dif = 4;
-	
 	var stats = new Stats('groups');
-
-	var groupdata = 
-	_u.chain(_u.values(mappings))
-	.sortBy(function(it){
-		return _u.sortBy(it.split(','), function(num){
-			return parseInt(num);
-		}).join(',');
-	})
-	.groupBy(function(it){
-		return _u.sortBy(it.split(','), function(num){
+	
+	//group by 4 numbers
+	if(opts.groupBy == 4){
+		var groupdata = 
+		_u
+		.chain(_u.values(mappings))
+		.map(function(it){
+			return _u.map(it.split(','), function(itn){
+				return _u.without(it.split(','),itn).join(',');
+			});
+		})
+		.flatten()
+		.countBy(function(it){
+			return _u.sortBy(it.split(','), function(num){
 				return parseInt(num);
 			}).join(',');
-	});
+		});
+	}
+	else{
+		var groupdata = 
+		_u
+		.chain(_u.values(mappings))
+		.sortBy(function(it){
+			return _u.sortBy(it.split(','), function(num){
+				return parseInt(num);
+			}).join(',');
+		})
+		.groupBy(function(it){
+			return _u.sortBy(it.split(','), function(num){
+					return parseInt(num);
+				}).join(',');
+		});
+	}
 	console.log(groupdata);
 	console.log("total data: " + _u.size(hisdatas));
 	console.log("total group data: " + _u.size(groupdata._wrapped));

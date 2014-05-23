@@ -37,12 +37,4 @@ Stats.prototype.incSet = function(key){
 	this.set(key, element);
 }
 
-Stats.prototype.incGet = function(key){
-	var element = this.get(key);
-	if(!element){
-		return 0;
-	}
-	return element;
-}
-
 exports = module.exports = Stats;

@@ -64,7 +64,7 @@ exports.hits = function(hisdatas, opts){
 	}
 	
 	var accurateHits = function(){
-		console.log("hitted before: ");
+		console.log("hitted before(%s): ", guessNums);
 		utils.log('-',36);
 		_u.each(mappings, function(v,k){
 			if(_u.size(_u.difference(guessNumsArr, v.split(','))) == 0){

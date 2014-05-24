@@ -33,6 +33,12 @@ exports.groups = function(hisdatas, opts){
 			return _u.sortBy(it.split(','), function(num){
 				return parseInt(num);
 			}).join(',');
+		})
+		.filter(function(v,k){
+			if(v>2){
+				console.log("{%s: %s}", k, v);
+				return "{%s: %s}", k, v
+			}
 		});
 	}
 	else{

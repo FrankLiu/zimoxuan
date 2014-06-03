@@ -96,7 +96,7 @@ program.command('absences')
 	
 program.command('*')
   .action(function() {
-    console.log(COMMAND_ERROR.error);
+    utils.errorlog(COMMAND_ERROR);
   });
   
 program.parse(process.argv);

@@ -1,7 +1,7 @@
 {
   "name": "lotteryguess",
   "description": "Guess TiCai next numbers",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "author": {
     "name": "Frank Liu",
     "email": "tonyliu2005@gmail.com"
@@ -18,15 +18,14 @@
     "csv": "0.3.3"
   },
   "devDependencies": {
-    "cheerio": "0.12.0",
-    "request": "2.22.0",
-    "underscore": "1.5.1",
-    "underscore.string": "2.3.3",
-    "csv": "0.3.3",
-	"mocha": "1.12.0"
+	"grunt": "0.4.1",
+	"grunt-cmd-transport" : "0.1.1",
+    "grunt-cmd-concat" : "0.1.0",
+    "grunt-contrib-uglify" : "0.2.0",
+    "grunt-contrib-clean" : "0.4.0"
   },
   "directories": {
-    "lib": "./src"
+    "lib": "./lib"
   },
   "scripts": {
     "test": "make test"
@@ -36,18 +35,16 @@
     "node": ">=0.10.13"
   },
   "bugs": {
-    "url": "https://github.com/learnboost/mongoose/issues/new"
+    "url": "https://github.com/FrankLiu/lotteryguess/issues/new"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/LearnBoost/mongoose.git"
+    "url": "git://github.com/FrankLiu/lotteryguess.git"
   },
-  "homepage": "http://mongoosejs.com",
+  "homepage": "http://lotteryguess.com",
   "readmeFilename": "README.md",
-  "_id": "mongoose@3.6.15",
+  "_id": "lotteryguess@0.3.2",
   "dist": {
     "shasum": "c4f0f40f00ffa8cedef9c7921632c5acf819f1bb"
-  },
-  "_from": "mongoose@",
-  "_resolved": "https://registry.npmjs.org/mongoose/-/mongoose-3.6.15.tgz"
+  }
 }

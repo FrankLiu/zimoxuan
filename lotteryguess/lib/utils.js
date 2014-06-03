@@ -2,7 +2,7 @@
  * JiangXi 11x5 statistics
  */
 
-'use strict';
+//'use strict';
 
 var _u = require('underscore'),
 	_s = require('underscore.string');
@@ -71,4 +71,25 @@ exports.pad = function(str, len, padstr){
 
 exports.padZero = function(str, len){
 	return exports.pad(str, len, '0');
+};
+
+// https://github.com/loopj/commonjs-ansi-color/blob/master/lib/ansi-color.js
+var ANSI_CODES = {
+  'fail': 31, // red
+  'error': 31, // red
+  'pass': 32, // green
+  'info': 37 // white
+}
+
+function color(str, type) {
+  return '\033[' +
+      (ANSI_CODES[type] || ANSI_CODES['info']) + 'm  '
+      + str + '\033[0m'
+}
+exports.colorlog = function(str, c){
+	console.log(color(str, c));
+};
+
+exports.errorlog = function(str){
+	exports.colorlog(str, ANSI_CODES['error']);
 };

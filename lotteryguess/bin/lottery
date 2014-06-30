@@ -185,11 +185,14 @@ function statistics(opts) {
 	case 'groups':
 		parser.parse(opts, [Statistics.groups]);
 		break;
+	case 'counts':
+		parser.parse(opts, [Statistics.counts]);
+		break;
 	case 'all':
 		parser.parse(opts, Statistics.all);
 		break;
 	default:
-		console.log("Supported strategies: hits,groups,all");
+		console.log("Supported strategies: hits,groups,counts,all");
 		break;
 	}
 }

@@ -276,10 +276,13 @@ Parser.prototype.latest = function(duration, callback){
 						$(elem).find('td.chartBall01').each(function(i, ball){
 							ballNums.push($(ball).text());
 						});
+						var ballNumStr = _u.sortBy(ballNums, function(num){
+							return parseInt(num);
+						}).join(',');
 						//formatOutput([serialNo, ballNums.join(',')]);
 						//result.push({'serialNo': serialNo, 'ballnums': ballNums});
 						result.push(serialNo);
-						result.push(ballNums.join(','));
+						result.push(ballNumStr);
 						results[serialNo] = result;
 					}
 				});

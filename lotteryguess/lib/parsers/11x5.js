@@ -47,7 +47,7 @@ var default_yl_len = 30;
 
 var convertDuration2PeriodDays = function(duration){
 	if(!duration || duration <= 5) return 1;
-	if(duration > 5 && duration <= 78) return 3;
+	if(duration > 5 && duration <= 78) return 1;
 	if(duration > 78 && duration <= 234) return 3;
 	if(duration > 234 && duration <= 390) return 5;
 	return 5;

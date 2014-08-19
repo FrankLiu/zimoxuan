@@ -51,6 +51,17 @@ program.command('statistics')
 		if(opts.strategy == 'hits'){
 			opts.guessNums = utils.padZero(args.slice(0, -1)[0], 2);
 		}
+		else if(opts.strategy == 'hits-odd'){
+			opts.guessNums = utils.padZero('1,3,5,7,9,11',2);
+			opts.diffDeps = 3;
+		}
+		else if(opts.strategy == 'hits-even'){
+			opts.guessNums = utils.padZero('2,4,6,8,10',2);
+			opts.diffDeps = 2;
+		}
+		else{
+			//do nothing
+		}
 		statistics(opts);
 	});
 
@@ -180,6 +191,12 @@ function statistics(opts) {
 	console.log("parsing with "+opts.periodDays+" days data ...");
 	switch(opts.strategy){
 	case 'hits':
+		parser.parse(opts, [Statistics.hits]);
+		break;
+	case 'hits-even':
+		parser.parse(opts, [Statistics.hits]);
+		break;
+	case 'hits-odd':
 		parser.parse(opts, [Statistics.hits]);
 		break;
 	case 'groups':

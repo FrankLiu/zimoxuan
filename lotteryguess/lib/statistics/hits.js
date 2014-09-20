@@ -6,7 +6,6 @@
 
 var _u = require('underscore'),
 	_s = require('underscore.string');
-var async = require('async');
 var utils = require('../utils');
 
 /**

@@ -323,6 +323,12 @@ var getTransformFile = function(file){
 };
 
 Parser.prototype.transform = function(file, transformedFile){
+	//check file exist
+	if(!fs.existsSync(file)){
+		console.log("Warn: File [" + file + " ] not exists, please download it from website!");
+		return;
+	}
+	
 	var ftime = fs.statSync(file)['mtime'];
 	if(fs.existsSync(transformedFile) && ftime <= fs.statSync(transformedFile)['mtime']){
 		console.log("Transformed file is newer than original file, ignore transform");
@@ -360,15 +366,9 @@ Parser.prototype.transform = function(file, transformedFile){
 Parser.prototype.parse = function(opts, callbacks){
 	var hisdatas = [];
 	var file = getFilePath(opts.periodDays);
-	var transformedFile = getTransformFile(file);
-	
-	//check file exist
-	if(!fs.existsSync(file)){
-		console.log("File [" + file + " ] not exists, please download it from website!");
-		process.exit(1);
-	}
 	
 	//transform
+	var transformedFile = getTransformFile(file);
 	this.transform(file, transformedFile);
 	
 	//check transformed file exists
@@ -377,35 +377,28 @@ Parser.prototype.parse = function(opts, callbacks){
 		process.exit(1);
 	}
 	
-	csv()
-	.from.path(transformedFile, {delimiter: "\t"})
-	.to.array(function(data){
-		//console.log(data);
-	})
-	.transform( function(row, index){
-		//row.unshift(row.pop());
-		return row;
-	})
-	.on('record', function(row,index){
-		//console.log(JSON.stringify(row));
-		hisdatas.push(row);
-	})
-	.on('end', function(count){
-		//console.log(hisdatas);
+	var parser = csv.parse({delimiter: "\t"}, function(err, data){
+		//console.log(data)
+		hisdatas.push(data);
+	});
+	parser.on('end', function(){
 		//invoke callback functions
 		if(callbacks && _u.isArray(callbacks)){
 			_u.each(callbacks, function(c){
 				//console.log("invoked callback: " + c);
 				if(_u.isFunction(c)){
-					try{ c(hisdatas, opts); } 
+					try{ c(hisdatas[0], opts); } 
 					catch(e){ console.error(e); } 
 				}
 			});
 		}
-	})
-	.on('error', function(error){
-		console.log(error.message);
 	});
+	// Catch any error
+	parser.on('error', function(err){
+	  console.log(err.message);
+	});
+	
+	fs.createReadStream(transformedFile).pipe(parser);
 }
 
 module.exports = Parser;

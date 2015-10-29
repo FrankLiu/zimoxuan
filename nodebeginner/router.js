@@ -1,7 +1,7 @@
-function route(pathname, handler, response, postData){
+function route(pathname, handler, response, request){
 	console.log('route request path: %s', pathname);
 	if(typeof handler[pathname] === 'function'){
-		handler[pathname](response, postData);
+		handler[pathname](response, request);
 	}
 	else{
 		console.log("no request handler for path: %s", pathname);

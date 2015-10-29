@@ -10,12 +10,12 @@ function start(route, handler){
 		
 		req.setEncoding('utf8');
 		var postData = "";
-		req.addListener('data', function(chunked){
+		req.on('data', function(chunked){
 			postData += chunked;
 			console.log('received post data: %s', chunked);
 		});
-		req.addListener('end', function(){
-			route(pathname, handler, res, postData);
+		req.on('end', function(){
+			route(pathname, handler, res, req);
 		});
 		
 	}

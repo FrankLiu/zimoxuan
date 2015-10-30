@@ -7,7 +7,9 @@ var iconv = require('iconv-lite');
 var tough = require('tough-cookie'),
 	Cookie = tough.Cookie,
 	CookieJar = tough.CookieJar;
-	
+
+//turn on request debug by set it true
+request.debug = false;
 var DEFAULT_USER_AGENTS = [
 	'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.65 Safari/537.36',
 	'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36 SE 2.X MetaSr 1.0',
@@ -62,31 +64,36 @@ HttpClient.prototype = {
 			this.logger.info('reuse previous cookies store in instance');
 			options.cookies = this.cookies;
 		}
-		//add convinence path for add cookies
+		//add convenience path for add cookies
 		if(options.cookies){
 			//TODO: serialize/deserialize cookies
-			options.jar = CookieJar.deserializeSync(options.cookies);
+			this.logger.info('deserialize previous cookies...');
+			for(var cookie in options.cookies){
+				options.jar.setCookie(options.cookies);
+			}
 			delete options.cookies;
 		}
 		
 		var self = this;
+		options.method = method;
+		if(options.encoding === 'binary') options.encoding = null;
+		options.encoding = options.encoding || null; //encoding the body as expect or binary
 		callback = _.once(callback);
-		var encoding = options.encoding;
-		options.encoding = null; //always return the body
 		this.logger.info('%s %s', method, url);
-		this.logger.debug(options);
+		this.logger.debug('request options: ', options);
 		request(url, options, function(err, resp, body){
-			self.logger.info("status code: %s", resp.statusCode);
-			self.logger.info("headers: ");
+			if(err) return callback(err);
+			self.logger.info("response status code: %s", resp.statusCode);
+			self.logger.info("response headers: ");
 			self.logger.info(resp.headers);
 			
+			var contentType = (resp.headers['content-type'] || ';').split(';');
 			//decode body
-			if(self.opts.autoDecode){
+			if(!options.encoding && self.opts.autoDecode){
 				var content = "";
-				var contentType = (resp.headers['content-type'] || ';').split(';');
-				if(contentType[1].indexOf('charset') > -1){
-					encoding = contentType[1].substr(8, 5) || encoding || 'utf8';
-					self.logger.info('content encoding: %s', encoding);
+				if(contentType[1] && contentType[1].indexOf('charset') > -1){
+					var encoding =  encoding || contentType[1].trim().substr(8, 5) || 'utf8';
+					self.logger.info('response content encoding: %s', encoding);
 					content = iconv.decode(body, encoding);
 				}
 				resp.content = content;
@@ -98,7 +105,7 @@ HttpClient.prototype = {
 			//parse json/js data
 			if(self.opts.autoParseData){
 				var data = null;
-				if(_.include(['application/json', 'text/javascript'], contentType[0])) {
+				if(_.include(['application/json', 'text/javascript'], contentType[0].trim())) {
 					try {
 					  data = JSON.parse(content);
 					} catch (err) {
@@ -107,7 +114,7 @@ HttpClient.prototype = {
 				resp.data = data;
 			}
 			
-			resp.cookies = options.jar._jar.toJSON();
+			resp.cookies = options.jar.getCookies();
 			if(self.opts.keepCookies){
 				self.cookies = resp.cookies;
 			}

@@ -18,17 +18,20 @@ var ua = '018UW5TcyMNYQwiAiwQRHhBfEF8QXtHcklnMWc=|Um5OcktySXRKc0lwSndNciQ=|U2xMH
 var userName = "占城相送:u4";
 var password2 = "8c2ea3bec0c25fa14c23e94c6334e7082e9e36ec1e7719da07c19851298a98b678d59b74faf51ac8aeccab30e702e043eea6567ebebb7f81f8e14015726ad15893023ca35027c5307748c0122bb93f9ae0aea63b7082f870c3e25de3a97c351304dfa36afb5df969f3efebdbeb8d8b1755ae395cebcae0be5060dc9fd665620b";
 	
-var httpClient = new HttpClient({keepCookies: false});
+var httpClient = new HttpClient({keepCookies: true});
 
 //判断是否需要验证码
 function isNickRequiredCheck(nickName, callback){
 	var options = {
+		encoding: 'utf8',
 		form: {
 			username: nickName
 		}
 	};
 	httpClient.post(URL_REQUEST_NICK_CHECK, options, function(err, resp){
-		if(err) console.log(err);
+		if(err) return callback(err);
+		console.log(options);
+		//console.log(resp);
 		var ret = JSON.parse(resp.content);
 		console.log(ret);
 		callback(err, ret);
@@ -44,11 +47,11 @@ function uucode(ret, callback){
 	else{
 		var options = {
 			form: {
-				imgUrl: encodeURIComponent(ret.url)
+				imgCodeUrl: encodeURIComponent(ret.url)
 			}
 		};
 		httpClient.get(URL_UUCODE, options, function(err, resp){
-			if(err) console.log(err);
+			if(err) return callback(err);
 			var ret = JSON.parse(resp.content);
 			console.log(ret);
 			callback(err, ret);
@@ -129,7 +132,6 @@ function loginEntry(ret, callback){
 	
 //登录
 function login(formData, callback){
-	
 	var options = {
 		form: formData
 	};
@@ -144,8 +146,8 @@ function login(formData, callback){
 	});
 }
 
-//main
-var loginProcess = async.compose(login, loginEntry, uucode, isNickRequiredCheck);
+//main: login, loginEntry, 
+var loginProcess = async.compose(uucode, isNickRequiredCheck);
 loginProcess(userName, function(err, result){
 	if(err) console.log(err);
 	//console.log(result);

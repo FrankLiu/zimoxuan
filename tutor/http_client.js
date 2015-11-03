@@ -69,7 +69,7 @@ HttpClient.prototype = {
 			//TODO: serialize/deserialize cookies
 			this.logger.info('deserialize previous cookies...');
 			for(var cookie in options.cookies){
-				options.jar.setCookie(options.cookies);
+				options.jar.setCookie(cookie);
 			}
 			delete options.cookies;
 		}
@@ -81,11 +81,10 @@ HttpClient.prototype = {
 		callback = _.once(callback);
 		this.logger.info('%s %s', method, url);
 		this.logger.debug('request options: ', options);
-		request(url, options, function(err, resp, body){
+		return request(url, options, function(err, resp, body){
 			if(err) return callback(err);
 			self.logger.info("response status code: %s", resp.statusCode);
-			self.logger.info("response headers: ");
-			self.logger.info(resp.headers);
+			self.logger.info("response headers: ", resp.headers);
 			
 			var contentType = (resp.headers['content-type'] || ';').split(';');
 			//decode body
@@ -107,15 +106,16 @@ HttpClient.prototype = {
 				var data = null;
 				if(_.include(['application/json', 'text/javascript'], contentType[0].trim())) {
 					try {
-					  data = JSON.parse(content);
-					} catch (err) {
-					}
+						self.logger.info('parse js/json content...');						
+						data = JSON.parse(content);
+					} catch (err) {}
 				}
 				resp.data = data;
 			}
 			
 			resp.cookies = options.jar.getCookies();
 			if(self.opts.keepCookies){
+				self.logger.info('keep cookies in instance...');
 				self.cookies = resp.cookies;
 			}
 			
@@ -126,25 +126,26 @@ HttpClient.prototype = {
 
 	//get请求
 	get: function(url, options, callback){
-		this._call('GET', url, options, callback);
-		return this;
+		var elems = [];
+		_.each(options.form, function(v, k){
+			elems.push(k + '=' + v);
+		});
+		url += '?' + elems.join('&');
+		return this._call('GET', url, options, callback);
 	},
 
 	//post请求
 	post: function(url, options, callback){
-		this._call('POST', url, options, callback);
-		return this;
+		return this._call('POST', url, options, callback);
 	},
 
 	//put请求
 	put: function(url, options, callback){
-		this._call('PUT', url, options, callback);
-		return this;
+		return this._call('PUT', url, options, callback);
 	},
 
 	head: function(url, options, callback){
-		this._call('HEAD', url, options, callback);
-		return this;
+		return this._call('HEAD', url, options, callback);
 	}
 };
 

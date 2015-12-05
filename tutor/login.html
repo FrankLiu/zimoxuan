@@ -25,11 +25,15 @@ if(window.top !== window.self){ window.top.location = window.location;}
 
 
 
+<link type="text/css" href="//g.alicdn.com/sd/ncpc/nc.css?t=2015110310 %>" rel="stylesheet" />
+
+
+
 <script src="https://assets.alicdn.com/g/kissy/k/1.4.4/seed-min.js"></script>
 
 </head>
 <body class="chl-reg" data-spm="1"><script>
-with(document)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("exparams","category=&userid=&aplus&yunid=&gygGoNxG2wvSNL5&trid=0aec628914465130435303732e&asid=AQAAAACTCThWkjE4DwAAAAAogVY82DKA8Q==",id="tb-beacon-aplus",src=(location>"https"?"//g":"//g")+".alicdn.com/alilog/mlog/aplus_v2.js")
+with(document)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("exparams","category=&userid=&aplus&yunid=&UmkBafXFbr24YO3&trid=0ab26c1914465163898754390e&asid=AQAAAAClFjhWH3nDHQAAAAD2csqmpAE0Wg==",id="tb-beacon-aplus",src=(location>"https"?"//g":"//g")+".alicdn.com/alilog/mlog/aplus_v2.js")
 </script>
 
 <div id="page" class="">
@@ -65,7 +69,7 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
                     <div class="static-form">
                        <div id="J_Message"  class="login-msg error">
 	                      <i class="iconfont">&#xe604;</i>
-	                       <p class="error">你输入的密码和账户名不匹配，是否<br /><a href="https://passport.taobao.com/ac/password_find.htm?from_site=0?_nk_=%3F%3F%3F%3F%3F%3F%3F%3Au4&forget_passwd=true" tabindex="1" target="_blank">忘记密码</a>或<a href="http://service.taobao.com/support/knowledge-1120621.htm?_pvf=1120621" target="_blank">忘记会员名</a></p>			
+	                       <p class="error">为了你的账户安全，请拖动滑块完成验证</p>			
 	                
                   </div>
                   <!--登录的错误信息结束-->
@@ -93,7 +97,7 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
           <div class="field ph-hide username-field">
         	<label for="TPL_username_1"> <i class="iconfont" title="会员名">&#xe601;</i></label>
             <span class="ph-label">手机号/会员名/邮箱</span>
-            <input type="text" name="TPL_username" id="TPL_username_1" class="login-text J_UserName J_Focused" value="%3F%3F%3F%3F%3F%3F%3F%3Au4" maxlength="32" tabindex="1"/>            	
+            <input type="text" name="TPL_username" id="TPL_username_1" class="login-text J_UserName J_Focused" value="%D5%BC%B3%C7%CF%E0%CB%CD%3Au4" maxlength="32" tabindex="1"/>            	
           </div>     
           
 			<div class="field pwd-field">
@@ -107,16 +111,9 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
 				<strong id="J_CapsLockTip" class="warning-tip" style="display:none;">Caps Lock键正处于启用状态，<br />启用它可能导致密码输入错误。</strong>
 			</div>
 			
-			<!-- regular checkcode -->
-			<div class="field field-checkcode hidden" id="l_f_code" >
-	              <span class="ph-label">验证码</span> 
-	              <input id="J_CodeInput_i" type="text" class="login-text checkcode J_CheckCode" maxlength="4" name="TPL_checkcode" tabindex="3" />
-	              
-	              <img id="J_StandardCode_m" src="https://assets.alicdn.com/apps/login/static/img/blank.gif" data-src="" class="check-code-img" />
-	              
-	              <a href="#" class="change-code" id="J_StandardCode">看不清<br />换一张</a>
-             </div>
-             
+			<!-- use new slide checkcode -->
+			<div id="nocaptcha" class="nc-container tb-login"></div>
+			
 			
 			 <div class="login-links">
 			       
@@ -130,10 +127,10 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
             <!-- for slide checkcode -->
             <input id="J_NcoSig" name="ncoSig" type="hidden"/>
             <input id="J_NcoSessionid" name="ncoSessionid" type="hidden"/>
-            <input id="J_NcoToken" type="hidden" name="ncoToken" value="26eb3733816593061d625782eb419bffd1d4b771"/>
+            <input id="J_NcoToken" type="hidden" name="ncoToken" value="8fd6e027843cf098d9af1bb31510ae173cca490d"/>
             <input id="J_NcoUa" type="hidden" name="ua"/> 
-            <input type="hidden" name="useSlideCheckcode" value="false"/> 
-			<input id="J_NcoShow" type="hidden" name="slideCodeShow" value="false"/> 
+            <input type="hidden" name="useSlideCheckcode" value="true"/> 
+			<input id="J_NcoShow" type="hidden" name="slideCodeShow" value="true"/> 
 			
         	<input type="hidden" name="loginsite" value="0" id="J_loginsite"/>
             <input type="hidden" name="newlogin" value="" />
@@ -153,7 +150,7 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
             <input type="hidden" name="loginType" value="3" />
             <input type="hidden" name="minititle" value=""/>
             <input type="hidden" name="minipara" value=""/>
-			<input type="hidden" id="um_to" name="umto" value="taobao_login:32dd775098414eda2af8813669b721b1"/>
+			<input type="hidden" id="um_to" name="umto" value="taobao_login:c3fca83aea500b5a313943b90ebd7e81"/>
             <input type="hidden" name="pstrong" value="" />
             
             <input type="hidden" id="J_sign" name="sign" value=""/>
@@ -197,7 +194,7 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
         	    
             
             
-            <a href="http://weibo.com/login.php?entry=taobao&goto=https%3A%2F%2Flogin.taobao.com%2Faso%2Ftvs%3Fdomain%3Dweibo%26sid%3Dc4bfa12a0b807cb44f936fc232003307%26target%3D&goto2=" class="weibo-login" title="微博帐号登录">微博登录</a> 
+            <a href="http://weibo.com/login.php?entry=taobao&goto=https%3A%2F%2Flogin.taobao.com%2Faso%2Ftvs%3Fdomain%3Dweibo%26sid%3D547670d53c095140b28a384df9f93c73%26target%3D&goto2=" class="weibo-login" title="微博帐号登录">微博登录</a> 
             
             <a href="https://auth.alipay.com/login/index.htm?loginScene=7&goto=https%3A%2F%2Fauth.alipay.com%2Flogin%2Ftaobao_trust_login.htm%3Ftarget%3Dhttps%253A%252F%252Flogin.taobao.com%252Fmember%252Falipay_sign_dispatcher.jhtml%253Ftg%253D&params=VFBMX3JlZGlyZWN0X3VybD0%3D" class="alipay-login" title="支付宝账户登录">支付宝登录</a>
             
@@ -256,7 +253,7 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
 <script>
     window.loginConfig = {
         //验证码
-        codeURL: "",
+        codeURL: "https://pin.aliyun.com/get_img?sessionid=778b04893e6c6bd63af3fac011360296&identity=taobao.login&type=bak_150_40&dt=1446516389836",
         codeHandle: "#J_StandardCode",
         codeImg: "#J_StandardCode_m",
         enableQRCode: true,   // 是否允许二维码登录 
@@ -364,7 +361,7 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
     <a href="http://www.ppaaol.com/verifySite.do?id=1051" class="mod mod-e"></a>
   </div>
 <!-- #footer END -->
-<div id="server-num">login010236026048.unit.cm4</div>
+<div id="server-num">login010185087113.unsz.su18</div>
 	</div>
   </div>
 </div>
@@ -376,23 +373,49 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
 
 
 
+<script type="text/javascript" charset="utf-8" src="//g.alicdn.com/sd/ncpc/nc.js?t=2015110310"></script>
+
+
+
 <script>
 
-  var UA_Opt = new Object;
+
+  var UA_Opt = {};
   UA_Opt.ExTarget = ['TPL_password_1','TPL_password_2','J_Pwd1','J_PwdV'];
-  UA_Opt.ResHost = 'acjstb.aliyun.com';
   UA_Opt.FormId = "J_StaticForm";
-  UA_Opt.LogVal = "log"; 
-  UA_Opt.Token = new Date().getTime()+":"+Math.random();  
-  UA_Opt.ImgUrl = "";  
-  UA_Opt.GetAttrs = ['href', 'src']; 
-  UA_Opt.MaxMCLog = 150;  
-  UA_Opt.MaxKSLog = 150;  
-  UA_Opt.MaxMPLog = 150;  
-  UA_Opt.MPInterval = 150;  
-  UA_Opt.SendInterval = 10;  
-  UA_Opt.SendMethod = 1;  
-  UA_Opt.Flag = 131071;
+  
+  function initNC() {
+		var nc = new noCaptcha();
+			var opt = {
+				renderTo : "nocaptcha",
+				appkey : "CF_APP_TBLogin_PC", 
+				token : "8fd6e027843cf098d9af1bb31510ae173cca490d",
+				elementID : [ "TPL_username_1" ],
+				is_Opt : 1,
+				language : "cn",
+				isEnabled : true,
+				times : 3,
+				callback: function (data) {
+					var S = KISSY;
+					S.one("#J_NcoSig").val( data.sig);
+					S.one("#J_NcoSessionid").val(data.csessionid);
+					S.one("#J_NcoUa").val(window[UA_Opt.LogVal]);
+				},
+				error: function (s) {
+					window.console && console.log("error");
+					window.console && console.log(s);
+				},
+				is_tbLogin : true
+			};
+			nc.init(opt);		
+	}
+
+	initNC();
+	
+	
+		__nc.show();
+	
+  
   
 </script>
 
@@ -404,8 +427,6 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
 		
 
 
-
-	S.getScript('https://acjstb.aliyun.com/actionlog/js/ua.js',function(){try{UA_Opt.reload();window.getUA = function(){ var tmp = log; UA_Opt.Token= new Date().getTime()+":"+Math.random(); UA_Opt.reload(); return tmp;}}catch(e){}});
 
 	S.use("event, node", function(){
 		S.one(window).on("load", function(){
@@ -420,21 +441,21 @@ with(document)with(body)with(insertBefore(createElement("script"),firstChild))se
 
 
 <div id="_umfp" style="display:inline;width:1px;height:1px;overflow:hidden">
-<img src="https://ynuf.alipay.com/service/clear.png?xt=taobao_login%3A32dd775098414eda2af8813669b721b1&xa=taobao_login" />
+<img src="https://ynuf.alipay.com/service/clear.png?xt=taobao_login%3Ac3fca83aea500b5a313943b90ebd7e81&xa=taobao_login" />
 </div>
 <div style="width:0;height:0;overflow:hidden;">
 <script src="https://assets.alicdn.com/g/security/umscript/2.1.4/um.js"></script>
 <script>
 		var elumto=document.getElementById("um_to");
 		if(elumto){
-			elumto.value += 'taobao_login:32dd775098414eda2af8813669b721b1'+',';
+			elumto.value += 'taobao_login:c3fca83aea500b5a313943b90ebd7e81'+',';
 		}
 		try {
 			var container = document.getElementById('_umfp');
 			um.init({
 			   timeout: 3000,
-			   timestamp: '57640069545B5F4451496374',
-			   token:'taobao_login:32dd775098414eda2af8813669b721b1',
+			   timestamp: '88945021595450445449677C',
+			   token:'taobao_login:c3fca83aea500b5a313943b90ebd7e81',
 			   serviceUrl:'https://ynuf.alipay.com/service/um.json',
 			   appName: 'taobao_login',
 			   

@@ -1,49 +1,55 @@
 var util = require('util');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
-var DEFAULT_CONFIG = {
-	pool: {
-		max: 5,
-		min: 0,
-		idle: 10000
-	}
-};
 
-var ORM = function(dburl, opts){
-	opts = _.extend({}, opts, DEFAULT_CONFIG);
-	Sequelize.call(this, dburl, opts);
-}
-util.inherits(ORM, Sequelize);
-_.extend(ORM, Sequelize);
+var CONNECTION_URL = 'mysql://root:123456@localhost:3306/asto_ec_origin';
 
-var orm = new Sequelize('mysql://root:123456@localhost:3306/asto_ec_origin');
-console.log(ORM);
+var sequelize = new Sequelize(CONNECTION_URL);
 
-var User = orm.define('user', {
+var User = sequelize.define('user', {
   firstName: {
-    type: ORM.STRING,
-    field: 'first_name' // Will result in an attribute that is firstName when user facing but first_name in the database
+    type: Sequelize.STRING,
+    field: 'first_name'
   },
   lastName: {
-    type: ORM.STRING
+    type: Sequelize.STRING
   }
 }, {
   freezeTableName: true // Model tableName will be the same as the model name
 });
 
-User.sync({force: true}).then(function () {
-  // Table created
-  return User.create({
+var Product = sequelize.define('Product', {
+  title: Sequelize.STRING
+});
+var Tag = sequelize.define('Tag', {
+	name: Sequelize.STRING
+});
+
+Product.hasMany(Tag, {foreignKey: 'product_id'});
+
+User.sync();
+Product.sync();
+Tag.sync();
+
+User.create({
     firstName: 'John',
     lastName: 'Hancock'
-  });
+});
+
+Product.create({
+  id: 1,
+  title: 'Chair',
+  Tags: [
+    { name: 'Alpha'},
+    { name: 'Beta'}
+  ]
+}, {
+  include: [ Tag ]
 })
-;
 
 _.delay(function(){
-	User.findAll().then(function (user) {
-		console.log(user);
-		console.log(user[0].dataValues.firstName, user.lastName);
+	User.findOne().then(function(user) {
+		console.log(user.firstName + ' ' + user.lastName);
 	});
 }, 5000);
 

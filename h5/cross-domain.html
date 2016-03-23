@@ -1,0 +1,24 @@
+ <html> 
+ <head> 
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ <title>Test Cross-domain communication using HTML5</title> 
+ <script type="text/JavaScript"> 
+	 function sendIt(){ 
+		 // 通过 postMessage 向子窗口发送数据
+		 document.getElementById("otherPage").contentWindow 
+			 .postMessage( 
+				 document.getElementById("message").value, 
+				"http://child.com:8080"
+			 ); 
+	 } 
+ </script> 
+ </head> 
+ <body> 
+	 <!-- 通过 iframe 嵌入子页面 --> 
+	 <iframe src="http://child.com:8080/TestHTML5/other-domain.html" 
+				 id="otherPage"></iframe> 
+	 <br/><br/> 
+	 <input type="text" id="message"><input type="button" 
+			 value="Send to child.com" onclick="sendIt()" /> 
+ </body> 
+ </html>

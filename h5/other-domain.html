@@ -1,0 +1,18 @@
+<html> 
+ <head> 
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ <title>Web page from child.com</title> 
+ <script type="text/JavaScript"> 
+	 //event 参数中有 data 属性，就是父窗口发送过来的数据
+	 window.addEventListener("message", function( event ) { 
+		 // 把父窗口发送过来的数据显示在子窗口中
+	   document.getElementById("content").innerHTML+=event.data+"<br/>"; 
+	 }, false ); 
+
+ </script> 
+ </head> 
+ <body> 
+	 Web page from http://child.com:8080 
+	 <div id="content"></div> 
+ </body> 
+ </html>

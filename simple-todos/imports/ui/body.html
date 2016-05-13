@@ -3,17 +3,20 @@
   
     <header>
       <h1>Todo List ({{incompleteCount}})</h1>
-    </header>
-	
-	<label class="hide-completed">
+	  <label class="hide-completed">
         <input type="checkbox" />
         Hide Completed Tasks
     </label>
-	  
+	
+	{{> loginButtons}}
+    </header>
+	
+	{{#if currentUser}}
 	<form class="new-task">
         <input type="text" name="text" placeholder="Type to add new tasks" />
     </form>
-	  
+	{{/if}}
+	
     <ul>
       {{#each tasks}}
         {{> task}}

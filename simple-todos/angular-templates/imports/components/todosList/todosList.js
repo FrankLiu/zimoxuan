@@ -1,10 +1,9 @@
+import { Tasks } from '../../api/tasks.js';
 import angular from 'angular';
 import angularMeteor from 'angular-meteor';
-import { Tasks } from '../../api/tasks.js';
-
 import template from './todosList.html';
  
-class TodosListCtrl {
+export class TodosListCtrl {
   constructor($scope) {
     $scope.viewModel(this);
 	

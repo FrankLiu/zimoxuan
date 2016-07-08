@@ -1,0 +1,29 @@
+{
+  "name": "zimoxuan",
+  "version": "1.0.0",
+  "description": "A simple tutorial project for nodejs and javascript",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/FrankLiu/zimoxuan.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "JavaScript"
+  ],
+  "author": "Frank Liiu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FrankLiu/zimoxuan/issues"
+  },
+  "homepage": "https://github.com/FrankLiu/zimoxuan#readme",
+  "dependencies": {
+    "wilddog": "^0.6.4"
+  }
+}

@@ -1,6 +1,6 @@
 var zookeeper = require('node-zookeeper-client');
  
- var host = '192.168.7.7:2181';
+var host = '192.168.7.7:2181';
 var client = zookeeper.createClient(host);
 var path = process.argv[2];
 
@@ -12,7 +12,6 @@ function createPath(path){
             console.log('Node: %s is successfully created.', path);
         }
  
-        client.close();
     });
 }
 
@@ -37,12 +36,47 @@ function listChildren(path){
         }
     );
 }
- 
+
+function getData(path){
+	client.getData(
+		path,
+		function (event) {
+			console.log('Got event: %s.', event);
+		},
+		function (error, data, stat) {
+			if (error) {
+				console.log(error.stack);
+				return;
+			}
+	 
+			console.log('Got data: %s', data.toString('utf8'));
+		}
+	);
+}
+
+function setData(path, data, callback){
+	client.setData(path, data, -1, function (error, stat) {
+		if (error) {
+			console.log(error.stack);
+			return;
+		}
+	 
+		console.log('Data is set.');
+		
+		callback && callback();
+	});
+}
+
 client.once('connected', function () {
     console.log('Connected to the zookeeper server: %s', host);
  
     //createPath(path);
-    listChildren(path);
+	var data = new Buffer('data:bar');
+	setData(path, data, function(){
+		listChildren(path);
+		getData(path);
+	});
+    
 });
  
 client.connect();

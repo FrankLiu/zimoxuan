@@ -26,6 +26,7 @@
   "dependencies": {
     "node-zookeeper-client": "^0.2.2",
     "oauth2-server": "^2.4.1",
+    "redis": "^2.6.2",
     "wilddog": "^0.6.4"
   }
 }

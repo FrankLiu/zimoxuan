@@ -1,6 +1,8 @@
+'use strict';
+
 var zookeeper = require('node-zookeeper-client');
  
-var host = '192.168.7.7:2181';
+var host = '192.168.4.158:2181';
 var client = zookeeper.createClient(host);
 var path = process.argv[2];
 

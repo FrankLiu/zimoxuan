@@ -28,5 +28,8 @@
     "oauth2-server": "^2.4.1",
     "redis": "^2.6.2",
     "wilddog": "^0.6.4"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3"
   }
 }

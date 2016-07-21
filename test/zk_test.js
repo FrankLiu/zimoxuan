@@ -17,6 +17,17 @@ function createPath(path){
     });
 }
 
+function removePath(path){
+    client.remove(path, function (error) {
+        if (error) {
+            console.log('Failed to remove node: %s due to: %s.', path, error);
+        } else {
+            console.log('Node: %s is successfully removed.', path);
+        }
+ 
+    });
+}
+
 function listChildren(path){
     client.getChildren(
         path,
@@ -71,13 +82,16 @@ function setData(path, data, callback){
 
 client.once('connected', function () {
     console.log('Connected to the zookeeper server: %s', host);
- 
-    //createPath(path);
-	var data = new Buffer('data:bar');
-	setData(path, data, function(){
+	
+	var id = client.getSessionId();
+	console.log('Session id is: %s', id.toString('hex'));
+
+    // createPath(path);
+	// var data = new Buffer('data:bar');
+	// setData(path, data, function(){
 		listChildren(path);
-		getData(path);
-	});
+		// getData(path);
+	// });
     
 });
  

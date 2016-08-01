@@ -25,6 +25,8 @@
   "homepage": "https://github.com/FrankLiu/zimoxuan#readme",
   "dependencies": {
     "anyproxy": "^3.10.2",
+    "co": "^4.6.0",
+    "koa": "^1.2.1",
     "node-zookeeper-client": "^0.2.2",
     "oauth2-server": "^2.4.1",
     "redis": "^2.6.2",

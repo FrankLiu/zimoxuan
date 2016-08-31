@@ -24,12 +24,12 @@ client.hkeys("hash key", function (err, replies) {
 
 // Publish / Subscribe
 var sub = redis.createClient(host), pub = redis.createClient(host);
-var msg_count = 0;
- 
+var msg_count = 0, 
+	 channel = 'a nice channel';
 sub.on("subscribe", function (channel, count) {
-    pub.publish("a nice channel", "I am sending a message.");
-    pub.publish("a nice channel", "I am sending a second message.");
-    pub.publish("a nice channel", "I am sending my last message.");
+    pub.publish(channel, "I am sending a message.");
+    pub.publish(channel, "I am sending a second message.");
+    pub.publish(channel, "I am sending my last message.");
 });
  
 sub.on("message", function (channel, message) {
@@ -42,4 +42,4 @@ sub.on("message", function (channel, message) {
     }
 });
  
-sub.subscribe("a nice channel");
+sub.subscribe(channel);

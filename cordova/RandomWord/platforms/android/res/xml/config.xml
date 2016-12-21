@@ -15,6 +15,8 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <hook src="scripts/vueify-build.js" type="before_compile" />
     <allow-intent href="market:*" />
+    <allow-intent href="http://api.wordnik.com:80/*" />
     <preference name="loglevel" value="DEBUG" />
 </widget>

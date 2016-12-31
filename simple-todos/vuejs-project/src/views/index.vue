@@ -1,10 +1,11 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <img src="../assets/logo.png">
     <hello></hello>
     <div id="data-table-demo"></div>
   </div>
 </template>
+
 
 <script>
 import Hello from './components/Hello'
@@ -26,7 +27,7 @@ var demo = new Vue({
 })
 
 export default {
-  name: 'app',
+  name: 'home',
   components: {
     Hello,
     DataTable

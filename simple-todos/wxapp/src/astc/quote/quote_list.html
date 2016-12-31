@@ -1,0 +1,168 @@
+<div class="page quote_list">
+    <div class="page__hd">
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+          </div>
+          <div class="weui-cell__bd astc_center">
+            <a id="btn_supply" href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary quote-list-switch-left visited">供应</a>
+            <a id="btn_purchase" href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary quote-list-switch-right">采购</a>
+          </div>
+          <div class="weui-cell__ft"><a href="#select_identity" class="astc_hd_link">注册</a></div>
+        </div>
+    </div>
+    <div class="page__bd">
+        <div class="weui-search-bar" id="astc_searchBar">
+            <form class="weui-search-bar__form">
+                <div class="weui-search-bar__box">
+                    <i class="weui-icon-search"></i>
+                    <input type="search" class="weui-search-bar__input" id="astc_searchInput" placeholder="搜索" required/>
+                    <a href="javascript:" class="weui-icon-clear" id="astc_searchClear"></a>
+                </div>
+                <label class="weui-search-bar__label" id="astc_searchText">
+                    <i class="weui-icon-search"></i>
+                    <span>搜索</span>
+                </label>
+            </form>
+            <a href="javascript:" class="weui-search-bar__cancel-btn" id="astc_searchCancel">取消</a>
+        </div>
+
+        <div class="weui-cells searchbar-result" id="astc_searchResult">
+            <div class="weui-cell weui-cell_access">
+                <div class="weui-cell__bd weui-cell_primary">
+                    <p>实时搜索文本</p>
+                </div>
+            </div>
+            <div class="weui-cell weui-cell_access">
+                <div class="weui-cell__bd weui-cell_primary">
+                    <p>实时搜索文本</p>
+                </div>
+            </div>
+            <div class="weui-cell weui-cell_access">
+                <div class="weui-cell__bd weui-cell_primary">
+                    <p>实时搜索文本</p>
+                </div>
+            </div>
+            <div class="weui-cell weui-cell_access">
+                <div class="weui-cell__bd weui-cell_primary">
+                    <p>实时搜索文本</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="weui-panel astc-quote-list-item">
+            <div class="weui-panel__hd">
+                <div class="weui-cell astc-quote-list-item-main">
+                    <div class="weui-cell__hd">
+                        <img src="./images/astc/product1.png" alt="">
+                    </div>
+                    <div class="weui-cell__bd astc-no-padding">
+                        <div class="weui-cell astc-min-padding">
+                            <div class="weui-cell_hd">供应</div>
+                            <div class="weui-cell_bd">：</div>
+                            <div class="weui-cell_ft">红枣</div>
+                        </div>
+                        <div class="weui-cell astc-min-padding">
+                            <div class="weui-cell_hd">价格</div>
+                            <div class="weui-cell_bd">：</div>
+                            <div class="weui-cell_ft">25-35元／斤</div>
+                        </div>
+                        <div class="weui-cell astc-min-padding">
+                            <div class="weui-cell_hd astc_quote_tag">直发</div>
+                            <div class="weui-cell_bd">&nbsp;&nbsp;</div>
+                            <div class="weui-cell_ft astc_quote_tag">甩货</div>
+                        </div>
+                        <div class="weui-cell astc-min-padding">
+                            <div class="weui-cell_hd">
+                                <img src="./images/astc/friend_org.png" style="width:20px;vertical-align:middle;margin-right:5px;" alt="">
+                            </div>
+                            <div class="weui-cell_bd">&nbsp;&nbsp;</div>
+                            <div class="weui-cell_ft">旺旺果品批发</div>
+                        </div>
+                    </div>
+                    <div class="weui-cell__ft">
+                        <img src="./images/astc/phone.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="weui-panel__hd  astc-min-padding  astc-quote-list-item-ft">
+                <div class="weui-cell astc-no-padding">
+                    <div class="weui-cell__hd">
+                        <img src="./images/astc/personal_add.png" style="width:10px;vertical-align:middle;margin-right:5px;" alt="">
+                    </div>
+                    <div class="weui-cell__bd">
+                        浙江杭州
+                    </div>
+                    <div class="weui-cell__ft">
+                        2016-10-15
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="page__ft astc-no-padding">
+    <!--
+        <a href="javascript:home()"><img src="./images/icon_footer_link.png" /></a>
+    -->
+        <a href="javascript:;" id="asto-quote-publish-btn" class="weui-btn weui-btn_primary astc-no-padding asto-quote-publish">发布供应</a>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var $searchBar = $('#astc_searchBar'),
+            $searchResult = $('#astc_searchResult'),
+            $searchText = $('#astc_searchText'),
+            $searchInput = $('#astc_searchInput'),
+            $searchClear = $('#astc_searchClear'),
+            $searchCancel = $('#astc_searchCancel'),
+            $btn_supply = $('#btn_supply'),
+            $btn_purchase = $('#btn_purchase');
+
+
+        function hideSearchResult(){
+            $searchResult.hide();
+            $searchInput.val('');
+        }
+        function cancelSearch(){
+            hideSearchResult();
+            $searchBar.removeClass('weui-search-bar_focusing');
+            $searchText.show();
+        }
+
+        $searchText.on('click', function(){
+            $searchBar.addClass('weui-search-bar_focusing');
+            $searchInput.focus();
+        });
+        $searchInput
+            .on('blur', function () {
+                if(!this.value.length) cancelSearch();
+            })
+            .on('input', function(){
+                if(this.value.length) {
+                    $searchResult.show();
+                } else {
+                    $searchResult.hide();
+                }
+            })
+        ;
+        $searchClear.on('click', function(){
+            hideSearchResult();
+            $searchInput.focus();
+        });
+        $searchCancel.on('click', function(){
+            cancelSearch();
+            $searchInput.blur();
+        });
+
+        $btn_supply.on('click',function(){
+            $btn_supply.addClass('visited');
+            $btn_purchase.removeClass('visited');
+            $('#asto-quote-publish-btn').text('发布供应')
+        });
+        $btn_purchase.on('click',function(){
+            $btn_purchase.addClass('visited');
+            $btn_supply.removeClass('visited');
+            $('#asto-quote-publish-btn').text('发布采购')
+        });
+    });
+</script>

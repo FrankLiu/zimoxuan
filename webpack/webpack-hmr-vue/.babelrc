@@ -1,6 +1,6 @@
 {
   "presets": [
-    "vue",
+	"vue",
     "env"
   ]
 }

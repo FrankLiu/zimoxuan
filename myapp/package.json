@@ -1,6 +1,7 @@
 {
   "name": "myapp",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "MVVM implementation",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"

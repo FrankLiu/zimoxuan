@@ -3,13 +3,41 @@
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() : 
-	typeof define === 'function' && define.amd ? define(factory) : global.pine = factory();
+	typeof define === 'function' && define.amd ? define(factory) : global.Pine = factory();
 }(this, (function () { 'use strict';
-	var pine = {};
+	var Pine = {};
+	
+	Pine.VERSION = "1.0.0";
+	
+	var previousPine = global.Pine;
+	Pine.noConflict = function() {
+		global.Pine = previousPine;
+		return this;
+	};
 	
 	var nativeForEach = Array.prototype.forEach,
 		_slice = Array.prototype.slice;
 	
+	var NotImplementedError = Rx.NotImplementedError = function (message) {
+		this.message = message || 'This operation is not implemented';
+		Error.call(this);
+	};
+	NotImplementedError.prototype = Error.prototype;
+
+	var NotSupportedError = Rx.NotSupportedError = function (message) {
+		this.message = message || 'This operation is not supported';
+		Error.call(this);
+	};
+	NotSupportedError.prototype = Error.prototype;
+
+	var notImplemented = Rx.helpers.notImplemented = function () {
+		throw new NotImplementedError();
+	};
+
+	var notSupported = Rx.helpers.notSupported = function () {
+		throw new NotSupportedError();
+	};
+  
 	function Observable(o){
 		function each(obj, cb, context){
 			if(obj === null) return;
@@ -84,6 +112,10 @@
 			publish: trigger
 		});
 	}
+	Pine.Observable = Observable;
+	Pine.Observable.fromEvent = function($el, evt){
+		
+	}
 	
 	function ViewModel(name, options){
 		this.name = name;
@@ -93,11 +125,11 @@
 		this.methods = options.methods || {};
 	}
 	
-	pine.define = function(name, options){
+	Pine.define = function(name, options){
 		return new ViewModel(name, options);
 	}
 	
-	return pine;
+	return Pine;
 })));
 
 

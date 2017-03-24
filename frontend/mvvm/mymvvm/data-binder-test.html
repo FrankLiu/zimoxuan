@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+	<meta charset="UTF-8">
+	<title>DataBinder Test</title>
+	<!--<script src="../jquery-1.12.4.js"></script>-->
+	<script src="data-binder.js"></script>
+	<script>
+		var user;
+		function User(uid){
+			var binder = new DataBinder(uid),
+					user = {
+						attributes: {},
+						//属性设置器使用数据绑定器PubSub来发布变化   
+						set: function(attr_name, val){
+							this.attributes[attr_name] = val;
+							binder.publish(uid+':change', attr_name, val, this);
+						},
+						get: function(attr_name){
+							return this.attributes[attr_name];
+						},
+						
+						_binder: binder
+					};
+			
+			binder.subscribe(uid+':change', function(evt, attr_name, new_val, initiator){
+				if(initiator !== user){
+					user.set(attr_name, new_val);
+				}
+			});
+			
+			return user;
+		}
+		
+		//$(document).ready(function(){
+			
+		//});
+		user = new User('123');
+		user.set('name', 'liujun');
+	</script>
+</head>
+
+<body>
+	<div data-bind-123="name"></div>
+	<input type="text" data-bind-123="name" />
+</body>
+
+</html>

@@ -1,0 +1,16 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "restdb": {
+    "host": "localhost",
+    "port": 3306,
+    "url": "mysql://restapi:restapi@localhost:3306/restdb",
+    "database": "restdb",
+    "password": "restapi",
+    "name": "restdb",
+    "user": "restapi",
+    "connector": "mysql"
+  }
+}

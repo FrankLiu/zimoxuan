@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+	<meta charset="UTF-8">
+	<title>DataBinder Test</title>
+	<!--<script src="../jquery-1.12.4.js"></script>-->
+	<script src="data-binder.js"></script>
+	<script>
+		var user;
+		function User(uid){
+			var binder = new DataBinder(uid),
+					user = {
+						attributes: {},
+						//属性设置器使用数据绑定器PubSub来发布变化   
+						set: function(attr_name, val){
+							this.attributes[attr_name] = val;
+							binder.publish(uid+':change', attr_name, val, this);
+						},
+						get: function(attr_name){
+							return this.attributes[attr_name];
+						},
+						
+						_binder: binder
+					};
+			
+			binder.subscribe(uid+':change', function(evt, attr_name, new_val, initiator){
+				if(initiator !== user){
+					user.set(attr_name, new_val);
+				}
+			});
+			
+			return user;
+		}
+		
+		function initUser(){
+			user = new User('123');
+			user.set('name', 'liujun');
+			
+			//增加实时更新功能：
+			var ipt = document.querySelectorAll('input[data-bind-123=name]');
+			ipt.forEach(function(i){
+				i.addEventListener('input', function(evt){
+					//只有该实现可以支持中文输入实时更新
+					setTimeout(function(){user.set('name', i.value);}, 0); 
+					//下面的promise实现不支持中文实时更新
+					//Promise.resolve().then(function(){
+					//	user.set('name', i.value);
+					//});
+				});
+				i.addEventListener('DOMAutoComplete', function(evt){
+					setTimeout(function(){user.set('name', i.value);}, 0);
+				});
+			});
+		}
+		
+		if(window.jQuery){
+			$(document).ready(initUser);		
+		} else {
+			window.onload = initUser;
+		}
+
+	</script>
+</head>
+
+<body>
+	<div data-bind-123="name"></div>
+	<input type="text" data-bind-123="name" />
+</body>
+
+</html>

@@ -35,6 +35,17 @@
 		function initUser(){
 			user = new User('123');
 			user.set('name', 'liujun');
+			
+			//增加实时更新功能：FIXME：不支持实时输入中文
+			var ipt = document.querySelectorAll('input[data-bind-123=name]');
+			ipt.forEach(function(i){
+				i.addEventListener('input', function(evt){
+					user.set('name', i.value);
+				});
+				i.addEventListener('DOMAutoComplete', function(evt){
+					user.set('name', i.value);
+				});
+			});
 		}
 		
 		if(window.jQuery){

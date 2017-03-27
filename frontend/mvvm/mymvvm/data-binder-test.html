@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>DataBinder Test</title>
-	<script src="../jquery-1.12.4.js"></script>
+	<!--<script src="../jquery-1.12.4.js"></script>-->
 	<script src="data-binder.js"></script>
 	<script>
 		var user;
@@ -32,16 +32,15 @@
 			return user;
 		}
 		
-		if(jQuery){
-			$(document).ready(function(){
-				user = new User('123');
-				user.set('name', 'liujun');
-			});		
+		function initUser(){
+			user = new User('123');
+			user.set('name', 'liujun');
+		}
+		
+		if(window.jQuery){
+			$(document).ready(initUser);		
 		} else {
-			window.onload = function(evt){
-				user = new User('123');
-				user.set('name', 'liujun');
-			}
+			window.onload = initUser;
 		}
 
 	</script>

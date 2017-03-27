@@ -26,7 +26,8 @@ function DataBinder_withJQuery(object_id){
 		
 		//PubSub将变化传播到所有的绑定元素，设置input标签的值或者其他标签的HTML内容   
 		pubSub.on(message, function(evt, prop_name, new_val){
-			jQuery('['+data_attr+'='+prop_name+']').each(function(){
+			var $binders = jQuery('['+data_attr+'='+prop_name+']');
+			$binders.each(function(){
 				var $bound = jQuery(this);
 				
 				if($bound.is("input, textarea, select")){

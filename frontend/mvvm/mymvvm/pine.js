@@ -6,341 +6,370 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) : global.Pine = factory();
 }(this, (function () { 'use strict';
-	var Pine = {};
-	Pine.VERSION = "1.0.0";
-	Pine.DEBUG = false;
+  //观察者对象
+  var uid = 0;
+  function Dep(){
+    this.id = uid++;
+    this.subs = [];
+  }
 
-	var directiveAttr = /pine-(\w+)-?(.*)/;
-	var openTag = '{{';
-    var closeTag = '}}';
-	
-	var nativeForEach = Array.prototype.forEach,
-		_slice = Array.prototype.slice;
-		
-	var NotImplementedError = Pine.NotImplementedError = function (message) {
-		this.message = message || 'This operation is not implemented';
-		Error.call(this);
-	};
-	NotImplementedError.prototype = Error.prototype;
+  Dep.target = null;
 
-	var NotSupportedError = Pine.NotSupportedError = function (message) {
-		this.message = message || 'This operation is not supported';
-		Error.call(this);
-	};
-	NotSupportedError.prototype = Error.prototype;
-	
-	Pine.helpers = {
-		isFunction: function(o){
-			return o && typeof o === 'function';
-		},
-		isNumber: function(o){
-			return o && typeof o === 'number';
-		},
-		notImplemented: function () {
-			throw new NotImplementedError();
-		},
-		notSupported: function () {
-			throw new NotSupportedError();
-		},
-		generateUUID: function(prefix){
-			prefix = prefix || 'pine';
-			return prefix + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-		}
-	};
-	var isFunction = Pine.helpers.isFunction;
-	var isNumber = Pine.helpers.isNumber;
-	var notImplemented = Pine.helpers.notImplemented;
-	var notSupported = Pine.helpers.notSupported;
-	var generateUUID = Pine.helpers.generateUUID;
+  Dep.prototype = {
+    addSub: function(sub){
+      this.subs.push(sub);
+    },
 
-	function Observable(o){
-		function each(obj, cb, context){
-			if(obj === null) return;
-			//如果支持本地forEach方法,并且是函数
-			if(nativeForEach && obj.forEach === nativeForEach){
-				obj.forEach(cb, context);
-			}
-			else{
-				for(var i=0,l=obj.length; i<l; i++){
-					cb.call(context, obj[i], i, obj);
-				}
-			}
-		}
+    depend: function(){
+      Dep.target.addDep(this);
+    },
 
-		function bind(evt, fn){
-			var events = this.events = this.events || {},
-				parts = evt.split(/\s+/),
-				i = 0,
-				num = parts.length,
-				part;
+    removeSub: function(sub){
+      var index = this.subs.indexOf(sub);
+      if(index >= 0){
+        this.subs.splice(index, 1);
+      }
+    },
 
-			each(parts, function(part, index){
-				events[part] = events[part] || [];
-				events[part].push(fn);
-			});
-			return this;
-		}
+    notify: function(){
+      this.subs.forEach(function(sub){
+        sub.update();
+      })
+    }
+  };
 
-		function once(evt, fn){
-			this.bind(evt, function fnc(){
-				fn.apply(this, slice.call(arguments));
-				this.unbind(evt, fn);
-			});
-			return this;
-		}
+  function Observer(data){
+    this.data = data;
+    this.walk(data);
+  }
 
-		function unbind(evt, fn){
-			var events = this.events,
-				parts = evt.split(/\s+/),
-				i = 0,
-				num = parts.length,
-				part;
+  Observer.prototype = {
+    walk: function(data){
+      var self = this;
+      Object.keys(data).forEach(function(key){
+        self.defineReactive(self.data, key, data[key]);
+      });
+    },
 
-			each(parts, function(part, index){
-				if(part in events){
-					events[part].splice(events[part].indexOf(fn), 1);
-					if(!events[part].length){
-						delete events[part];
-					}
-				}
-			});
-			return this;
-		}
+    defineReactive: function(data, key, val){
+      var dep = new Dep();
+      var childObj = observe(val);
 
-		function trigger(evt, fn){
-			var events = this.events,
-				i,
-				args,
-				flag;
-			if(!events || evt in events === false) return;
-			args = slice.call(arguments, 1);
-			for(i=events[evt].length-1;i>=0;i--){
-				flag = event[evt][i].apply(this, args);
-			}
-			return flag;
-		}
+      Object.defineProperty(data, key, {
+        enumerable: true, //可枚举
+        configurable: false, //不能再define
+        get: function(){
+          if(Dep.target){
+            dep.depend();
+          }
+          return val;
+        },
+        set: function(new_val){
+          if(new_val === val){
+            return;
+          }
+          val = new_val;
+          // 新的值是object的话，进行监听
+          childObj = observe(new_val);
+          //通知订阅者
+          dep.notify();
+        }
+      })
+    }
+  };
 
-		return Object.create(o, {
-			subscribe: bind,
-			once: once,
-			unsubscribe: unbind,
-			publish: trigger
-		});
-	}
-	Pine.Observable = Observable;
-	Pine.Observable.of = function(obj){
-		return new Pine.Observable(obj);
-	}
+  var observe = Observer.on = function(value){
+    if(!value || typeof value !== 'object'){
+      return;
+    }
+    return new Observer(value);
+  }
 
-	var Model = Pine.Model = function Model(o){
-		if(o instanceof Model) return o;
-		o = Pine.Observable(o);
-	}
-  
-	var ViewModel = Pine.ViewModel = function ViewModel(name, options){
-		this.name = name;
-		this.id = 'vm-'+Math.random()+'-'+Math.random();
-		this.$el = options.el;
-		this.data = options.data || {};
-		this.methods = options.methods || {};
-		var vmodels = this.generateVModel(this.data);
-		Pine.vmodels[name] = vmodels;
-		this.scan(this.$el, vmodels);
-	}
-	
-	ViewModel.prototype = {
-		generateVModel: function(scope){
-			var originalModel = this.$originalModel = {},
-				vmodel = this.$vmodel = {};
-			var self = this;
-			
-			for(var k in scope){
-				//缓存原始值
-				var val = scope[k];
-				originalModel[k] = val;
-				
-				//如果是函数，不用监控
-				if(isFunction(val)){
-					vmodel[k] = val;
-				}
-				else{
-					//创建监控属性或数组，自变量，由用户触发其改变
-					Object.defineProperty(vmodel, k, {
-						enumerable   : true,
-						configurable : true,
-						get: function(){
-							if(Pine.DEBUG){
-								console.log('invoked accessor get[%s]: %s', k, val);
-							}
-							return val; 
-						},
-						set: function(newVal){
-							if(Pine.DEBUG){
-								console.log('invoked accessor set[%s]: %s -> %s', k, val, newVal);
-							}
-							if(newVal === val) return;
-							val = newVal;
-							self._notifySubscribers();
-						}
-					});
-					
-				}
-			}
-			return vmodel;
-		},
-		
-		_notifySubscribers: function _notifySubscribers(){
-			
-		},
-		
-		//扫描root元素，绑定模型
-		executeBindings: function(bindings, vmodels){
-			for (var i = 0, binding; (binding = bindings[i++]);) {
-				binding.vmodels = vmodels;
-				Pine.directives[binding.type](binding);
-			};
-		},
-		
-		scan: function(elem, vmodels){
-			var cnode = elem.getAttributeNode('pine-controller');
-			if(cnode){
-				var vmodel = Pine.vmodels[cnode.value];
-				if(!vmodel){
-					if(Pine.DEBUG){
-						console.log('[warn]controller not defined: %s', cnode.value);
-					}
-					return;
-				}
-				//形成controller的作用域链接，方便像父scope搜索变量
-				vmodels = [vmodel].concat(vmodels);
-				elem.removeAttribute(cnode.name);
-			}
-			
-			//扫描其他属性
-			this.scanAttr(elem, vmodels);
-		},
-		
-		scanAttr: function(elem, vmodels){
-			var bindings = [];
-			var attributes = elem.getAttributes ? elem.getAttributes(): elem.attributes;
-			//遍历节点的属性
-      for(var i = 0,attr; (attr = attributes[i++]);) {
-				var matched = attr.name.match(directiveAttr);
-				if(matched){
-					var type = matched[1];
-					var param = matched[2] || "";
-					var value = attr.value;
-					var name = attr.name;
-					//存在相关指令
-					if (Pine.directives[type]) {
-						var binding = {
-							type: type,
-							param: param,
-							element: elem,
-							name: name,
-							expr: value,
-						};
-						bindings.push(binding);
-					}
-				}
-			}
-			
-			//处理绑定
-			if (bindings.length) {
-					this.executeBindings(bindings, vmodels);
-			}
-			
-			this.scanChildNodes(elem, vmodels);
-		},
-		
-		scanText: function(textNode, vmodels){
-			var bindings = [];
-			var tokens = this.scanExpr(textNode.data);
-			var docFragment = document.createDocumentFragment();
-			if(tokens.length){
-				for (var i = 0, token; (token = tokens[i++]);) {
-					var node = document.createTextNode(token.value);
-					if (token.expr) {
-						token.expr = token.value;
-						token.type = 'text';
-						token.element = node;
-						bindings.push(token);
-					}
-					docFragment.appendChild(node);
-				}
-			}
-			textNode.parentNode.replaceChild(docFragment, textNode);
-			if (bindings.length) {
-				this.executeBindings(bindings, vmodels);
-			}
-		},
-		
-		scanExpr: function(str) {
-			var tokens = [],
-				value, start = 0,
-				stop;
-			do {
-				stop = str.indexOf(openTag, start);
-				if (stop === -1) {
-					break;
-				}
-				value = str.slice(start, stop);
-				if (value) {
-					tokens.push({
-						value: value,
-						expr: false
-					});
-				}
-				start = stop + openTag.length;
-				stop = str.indexOf(closeTag, start);
-				if (stop === -1) {
-					break;
-				}
-				value = str.slice(start, stop);
-				if (value) {
-					tokens.push({
-						value: value,
-						expr: true
-					});
-				}
-				start = stop + closeTag.length;
-			} while (1);
+  function Compile(el, vm) {
+    this.$vm = vm;
+    this.$el = this.isElementNode(el) ? el : document.querySelector(el);
 
-			value = str.slice(start);
-			if (value) {
-				tokens.push({
-					value: value,
-					expr: false
-				});
-			}
-			return tokens;
-		},
-		
-		scanChildNodes: function(elem, vmodels) {
-			var nodes = _slice.call(elem.childNodes);
-			for (var i = 0, node; (node = nodes[i++]);) {
-				switch (node.nodeType) {
-					case 1:
-						this.scan(node, vmodels);
-						break;
-					case 3:
-						this.scanText(node, vmodels);
-						break;
-				}
-			}
-		}
-	};
-	
-	Pine.define = function(name, options){
-		var vmodels = this.vmodels || {};
-		var directives = this.directives || {};
-		var vm = vmodels[name];
-		if(vm){
-			throw Error('重复定义vm:' + vm.$id);
-		}
-		vm = new ViewModel(name, options);
-		return vm;
-	}
+    if (this.$el) {
+        this.$fragment = this.node2Fragment(this.$el);
+        this.init();
+        this.$el.appendChild(this.$fragment);
+    }
+}
 
-	return Pine;
+Compile.prototype = {
+    node2Fragment: function(el) {
+        var fragment = document.createDocumentFragment(),
+            child;
+
+        // 将原生节点拷贝到fragment
+        while (child = el.firstChild) {
+            fragment.appendChild(child);
+        }
+
+        return fragment;
+    },
+
+    init: function() {
+        this.compileElement(this.$fragment);
+    },
+
+    compileElement: function(el) {
+        var childNodes = el.childNodes,
+            me = this;
+
+        [].slice.call(childNodes).forEach(function(node) {
+            var text = node.textContent;
+            var reg = /\{\{(.*)\}\}/;
+
+            if (me.isElementNode(node)) {
+                me.compile(node);
+
+            } else if (me.isTextNode(node) && reg.test(text)) {
+                me.compileText(node, RegExp.$1);
+            }
+
+            if (node.childNodes && node.childNodes.length) {
+                me.compileElement(node);
+            }
+        });
+    },
+
+    compile: function(node) {
+        var nodeAttrs = node.attributes,
+            me = this;
+
+        [].slice.call(nodeAttrs).forEach(function(attr) {
+            var attrName = attr.name;
+            if (me.isDirective(attrName)) {
+                var exp = attr.value;
+                var dir = attrName.substring(2);
+                // 事件指令
+                if (me.isEventDirective(dir)) {
+                    compileUtil.eventHandler(node, me.$vm, exp, dir);
+                    // 普通指令
+                } else {
+                    compileUtil[dir] && compileUtil[dir](node, me.$vm, exp);
+                }
+
+                node.removeAttribute(attrName);
+            }
+        });
+    },
+
+    compileText: function(node, exp) {
+        compileUtil.text(node, this.$vm, exp);
+    },
+
+    isDirective: function(attr) {
+        return attr.indexOf('v-') == 0;
+    },
+
+    isEventDirective: function(dir) {
+        return dir.indexOf('on') === 0;
+    },
+
+    isElementNode: function(node) {
+        return node.nodeType == 1;
+    },
+
+    isTextNode: function(node) {
+        return node.nodeType == 3;
+    }
+  };
+
+  // 指令处理集合
+  var compileUtil = {
+      text: function(node, vm, exp) {
+          this.bind(node, vm, exp, 'text');
+      },
+
+      html: function(node, vm, exp) {
+          this.bind(node, vm, exp, 'html');
+      },
+
+      model: function(node, vm, exp) {
+          this.bind(node, vm, exp, 'model');
+
+          var me = this,
+              val = this._getVMVal(vm, exp);
+          node.addEventListener('input', function(e) {
+              var newValue = e.target.value;
+              if (val === newValue) {
+                  return;
+              }
+
+              //用macrotask来解决中文输入的问题
+              setTimeout(function(){
+                me._setVMVal(vm, exp, newValue);
+                val = newValue;
+              }, 0);
+          });
+      },
+
+      class: function(node, vm, exp) {
+          this.bind(node, vm, exp, 'class');
+      },
+
+      bind: function(node, vm, exp, dir) {
+          var updaterFn = updater[dir + 'Updater'];
+
+          updaterFn && updaterFn(node, this._getVMVal(vm, exp));
+
+          new Watcher(vm, exp, function(value, oldValue) {
+              updaterFn && updaterFn(node, value, oldValue);
+          });
+      },
+
+      // 事件处理
+      eventHandler: function(node, vm, exp, dir) {
+          var eventType = dir.split(':')[1],
+              fn = vm.$options.methods && vm.$options.methods[exp];
+
+          if (eventType && fn) {
+              node.addEventListener(eventType, fn.bind(vm), false);
+          }
+      },
+
+      _getVMVal: function(vm, exp) {
+          var val = vm._data;
+          exp = exp.split('.');
+          exp.forEach(function(k) {
+              val = val[k];
+          });
+          return val;
+      },
+
+      _setVMVal: function(vm, exp, value) {
+          var val = vm._data;
+          exp = exp.split('.');
+          exp.forEach(function(k, i) {
+              // 非最后一个key，更新val的值
+              if (i < exp.length - 1) {
+                  val = val[k];
+              } else {
+                  val[k] = value;
+              }
+          });
+      }
+  };
+
+
+  var updater = {
+      textUpdater: function(node, value) {
+          node.textContent = typeof value == 'undefined' ? '' : value;
+      },
+
+      htmlUpdater: function(node, value) {
+          node.innerHTML = typeof value == 'undefined' ? '' : value;
+      },
+
+      classUpdater: function(node, value, oldValue) {
+          var className = node.className;
+          className = className.replace(oldValue, '').replace(/\s$/, '');
+
+          var space = className && String(value) ? ' ' : '';
+
+          node.className = className + space + value;
+      },
+
+      modelUpdater: function(node, value, oldValue) {
+          node.value = typeof value == 'undefined' ? '' : value;
+      }
+  };
+
+  function Watcher(vm, exp, cb) {
+      this.cb = cb;
+      this.vm = vm;
+      this.exp = exp;
+      this.depIds = {};
+      this.value = this.get();
+  }
+
+  Watcher.prototype = {
+      update: function() {
+          this.run();
+      },
+      run: function() {
+          var value = this.get();
+          var oldVal = this.value;
+          if (value !== oldVal) {
+              this.value = value;
+              this.cb.call(this.vm, value, oldVal);
+          }
+      },
+      addDep: function(dep) {
+          // 1. 每次调用run()的时候会触发相应属性的getter
+          // getter里面会触发dep.depend()，继而触发这里的addDep
+          // 2. 假如相应属性的dep.id已经在当前watcher的depIds里，说明不是一个新的属性，仅仅是改变了其值而已
+          // 则不需要将当前watcher添加到该属性的dep里
+          // 3. 假如相应属性是新的属性，则将当前watcher添加到新属性的dep里
+          // 如通过 vm.child = {name: 'a'} 改变了 child.name 的值，child.name 就是个新属性
+          // 则需要将当前watcher(child.name)加入到新的 child.name 的dep里
+          // 因为此时 child.name 是个新值，之前的 setter、dep 都已经失效，如果不把 watcher 加入到新的 child.name 的dep中
+          // 通过 child.name = xxx 赋值的时候，对应的 watcher 就收不到通知，等于失效了
+          // 4. 每个子属性的watcher在添加到子属性的dep的同时，也会添加到父属性的dep
+          // 监听子属性的同时监听父属性的变更，这样，父属性改变时，子属性的watcher也能收到通知进行update
+          // 这一步是在 this.get() --> this.getVMVal() 里面完成，forEach时会从父级开始取值，间接调用了它的getter
+          // 触发了addDep(), 在整个forEach过程，当前wacher都会加入到每个父级过程属性的dep
+          // 例如：当前watcher的是'child.child.name', 那么child, child.child, child.child.name这三个属性的dep都会加入当前watcher
+          if (!this.depIds.hasOwnProperty(dep.id)) {
+              dep.addSub(this);
+              this.depIds[dep.id] = dep;
+          }
+      },
+      get: function() {
+          Dep.target = this;
+          var value = this.getVMVal();
+          Dep.target = null;
+          return value;
+      },
+
+      getVMVal: function() {
+          var exp = this.exp.split('.');
+          var val = this.vm._data;
+          exp.forEach(function(k) {
+              val = val[k];
+          });
+          return val;
+      }
+  };
+
+	//MVVM
+  function MVVM(options) {
+      this.$options = options;
+      var data = this._data = this.$options.data;
+      var me = this;
+
+      // 数据代理
+      // 实现 vm.xxx -> vm._data.xxx
+      Object.keys(data).forEach(function(key) {
+          me._proxy(key);
+      });
+
+      observe(data, this);
+
+      this.$compile = new Compile(options.el || document.body, this)
+  }
+
+  MVVM.prototype = {
+      $watch: function(key, cb, options) {
+          new Watcher(this, key, cb);
+      },
+
+      _proxy: function(key) {
+          var me = this;
+          Object.defineProperty(me, key, {
+              configurable: false,
+              enumerable: true,
+              get: function proxyGetter() {
+                  return me._data[key];
+              },
+              set: function proxySetter(newVal) {
+                  me._data[key] = newVal;
+              }
+          });
+      }
+  };
+
+	return MVVM;
 })));

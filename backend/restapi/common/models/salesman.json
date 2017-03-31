@@ -1,0 +1,33 @@
+{
+  "name": "Salesman",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "forceId": false,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "customer_count": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "from_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "thru_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

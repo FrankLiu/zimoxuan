@@ -1,0 +1,40 @@
+{
+  "name": "DataMarketPrice",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "forceId": false,
+  "properties": {
+    "category_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "price": {
+      "type": "number",
+      "format": "float"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "variety": {
+      "type": "string"
+    },
+    "postcode": {
+      "type": "string"
+    },
+    "market": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

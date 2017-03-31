@@ -1,0 +1,41 @@
+{
+  "name": "SimpleQuote",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "forceId": false,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "is_processed": {
+      "type": "boolean"
+    },
+    "processor": {
+      "type": "string"
+    },
+    "processed_comments": {
+      "type": "string"
+    },
+    "processed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

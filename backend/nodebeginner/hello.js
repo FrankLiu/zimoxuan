@@ -19,7 +19,7 @@ http.createServer(function(req, res){
   console.log("[%s] Request path: %s", new Date(), pathname);
 
   switch(pathname){
-    case '/':
+    case '/hello':
       res.end('hello nodejs!');
       break;
     case '/file':
@@ -28,7 +28,7 @@ http.createServer(function(req, res){
       });
       break;
     default:
-      res.end('default');
+      res.end('hello world!');
       break;
   }
 }).listen(3000);

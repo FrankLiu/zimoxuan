@@ -1,0 +1,122 @@
+{
+  "name": "Quote",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "forceId": false,
+  "properties": {
+    "kind": {
+      "type": "string",
+      "description": "Quote kind",
+      "enum": ["supply", "purchase"]
+    },
+    "category_id": {
+      "type": "integer"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "min_price": {
+      "type": "number",
+      "format": "float"
+    },
+    "max_price": {
+      "type": "number",
+      "format": "float"
+    },
+    "quantity": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "description": {
+      "type": "string"
+    },
+    "unit_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "quantity": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "source_postcode": {
+      "type": "string"
+    },
+    "from_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cal_thru_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "effective_days": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "hidden": {
+      "type": "boolean"
+    },
+    "tag_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "comments": {
+      "type": "belongsTo",
+      "model": "Quote",
+      "foreignKey": "quote_id"
+    },
+    "publisher": {
+      "type": "belongsTo",
+      "model": "User",
+      "foreignKey": "user_id"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "create"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {}
+}

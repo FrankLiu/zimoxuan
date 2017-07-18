@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+	<script src="jquery-3.1.1.min.js"></script>
+    <!-- 引入 echarts.js -->
+    <script src="echarts.min.js"></script>
+	<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 600px;height:400px;"></div>
+<script type="text/javascript">
+// 基于准备好的dom，初始化echarts实例
+var myChart = echarts.init(document.getElementById('main'));
+myChart.showLoading();
+
+var provinces = ['xinjiang'];
+var provincesText = ['新疆'];
+var currentIdx = 0;
+
+function showProvince() {
+    var name = provinces[currentIdx];
+	$.get('/echarts/' + name + '.json', function (geoJson) {
+        myChart.hideLoading();
+        echarts.registerMap(name, geoJson);
+        myChart.setOption(option = {
+			backgroundColor: '#eee',
+			title: {
+                text: '地州概况',
+				subtext: '只列出有产品上架的地州',
+                textStyle: {
+                    color: '#000'
+                }
+            },
+			tooltip: {
+				trigger: 'item',
+				formatter: '{b}'
+			},
+            visualMap: {
+                min: 800,
+				max: 50000,
+				text:['High','Low'],
+				realtime: false,
+				calculable: true,
+				inRange: {
+					color: ['lightskyblue','yellow', 'orangered']
+				}
+            },
+            series: [
+                {
+                    type: 'map',
+                    mapType: name,
+                    label: {
+                        emphasis: {
+                            textStyle: {
+                                color: '#000'
+                            }
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+							label:{show:true},
+                            borderColor: '#ff7900',
+                            areaColor: '#f1efcb',
+                        },
+                        emphasis: {
+							label:{show:true},
+                            areaColor: '#2fa33f',
+                            borderWidth: 0
+                        }
+                    },
+					roam: true,
+					scaleLimit:{min: 0.8, max: 1.5},
+					width: 460,
+					height:400,
+					data: [
+						{name: '乌鲁木齐', value: 20057.34},
+						{name: '吐鲁番', value: 15477.48},
+						{name: '克拉玛依', value: 31686.1},
+						{name: '哈密', value: 6992.6},
+						{name: '昌吉', value: 44045.49},
+						{name: '博州', value: 40689.64},
+						{name: '巴州', value: 37659.78},
+						{name: '阿克苏', value: 45180.97},
+						{name: '克州', value: 55204.26},
+						{name: '喀什', value: 21900.9},
+						{name: '和田', value: 4918.26},
+						{name: '伊犁', value: 5881.84},
+						{name: '塔城', value: 4178.01},
+						{name: '阿勒泰', value: 2227.92}
+					],
+					// 自定义名称映射
+					nameMap: {
+						'乌鲁木齐市': '乌鲁木齐',
+						'吐鲁番市': '吐鲁番',
+						'克拉玛依市': '克拉玛依',
+						'哈密市': '哈密',
+						'昌吉回族自治州': '昌吉',
+						'博尔塔拉蒙古自治州': '博州',
+						'巴音郭楞蒙古自治州': '巴州',
+						'阿克苏地区': '阿克苏',
+						'克孜勒苏柯尔克孜自治州': '克州',
+						'喀什地区': '喀什',
+						'和田地区': '和田',
+						'伊犁哈萨克自治州': '伊犁',
+						'塔城地区': '塔城',
+						'阿勒泰地区': '阿勒泰'
+					}
+                }
+            ]
+        });
+    });
+}
+
+showProvince();
+
+</script>
+</body>
+</html>

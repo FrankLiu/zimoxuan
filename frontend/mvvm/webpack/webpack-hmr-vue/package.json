@@ -1,0 +1,24 @@
+{
+  "name": "webpack-hmr-vue",
+  "version": "1.0.0",
+  "description": "practice for webpack-hmr",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack",
+    "dev": "webpack-dev-server"
+  },
+  "author": "Frank Liu",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.1",
+    "babel-preset-env": "^1.1.8",
+    "babel-preset-vue": "^0.1.0",
+    "vue": "^2.1.10",
+    "vue-html-loader": "^1.2.3",
+    "vue-loader": "^11.1.0",
+    "vue-template-compiler": "^2.1.10",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0"
+  }
+}

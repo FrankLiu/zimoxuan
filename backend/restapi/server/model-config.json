@@ -1,0 +1,90 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "User": {
+    "dataSource": "mongoDs"
+  },
+  "AccessToken": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "mongoDs",
+    "public": false,
+    "options": {
+      "strictObjectIDCoercion": true
+    }
+  },
+  "Role": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "CoffeeShop": {
+    "dataSource": "mysqlDs",
+    "public": true
+  },
+  "Reviewer": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "Review": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "Quote": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "SimpleQuote": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "Post": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "Comment": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "Salesman": {
+    "dataSource": "mongoDs",
+    "public": true
+  },
+  "WxInfo": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "Category": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "Tag": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "Unit": {
+    "dataSource": "mongoDs",
+    "public": false
+  },
+  "City": {
+    "dataSource": "mongoDs",
+    "public": false
+  }
+}

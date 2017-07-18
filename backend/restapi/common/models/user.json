@@ -1,0 +1,96 @@
+{
+  "name": "User",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "forceId": false,
+  "properties": {
+    "username": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inviter": {
+      "type": "string"
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "User type",
+          "enum": ["individual", "corporater"]
+        },
+        "fullname": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "contact_person": {
+          "type": "string"
+        },
+        "contact_phone": {
+          "type": "string"
+        },
+        "business_categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "friends": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collect_quotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collect_posts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collect_post_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "weixin_openid": {
+          "type": "string"
+        },
+        "weixin_nickname": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

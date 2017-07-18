@@ -1,0 +1,38 @@
+<!DOCTYPE>
+<html>
+<head>
+  <title>Simple Template testing</title>
+</head>
+<body>
+  <script type="text/html" id="item_tmpl">
+    <div id="<%=id%>" class="<%=(i % 2 == 1 ? " even" : "")%>">
+      <div class="grid_1 alpha right">
+        <img class="righted" src="<%=profile_image_url%>"/>
+      </div>
+      <div class="grid_6 omega contents">
+        <p><b><a href="/<%=from_user%>"><%=from_user%></a>:</b> <%=text%></p>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/html" id="user_tmpl">
+    <% for ( var i = 0; i < users.length; i++ ) { %>
+      <li><a href="<%=users[i].url%>"><%=users[i].name%></a></li>
+    <% } %>
+  </script>
+
+  <div id="results"></div>
+  <div id="swither">Switcher</div>
+</body>
+<script src="simple-template.js"></script>
+<script>
+  var resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = tmpl('item_tmpl', {
+    id: 1,
+    i: 5,
+    profile_image_url: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_ca79a146.png',
+    from_user: 'liujun',
+    text: 'ohhh, my god'
+  });
+</script>
+</html>

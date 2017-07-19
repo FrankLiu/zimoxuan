@@ -28,6 +28,36 @@ fs.readFile('/filepath', function(err, file){
 console.log('读取文件中...');
 ```
 
+数据库读取
+```javascript
+//定义mongodb schema
+var MessageSchema = new Schema({
+  type: { type: String },
+  master_id: { type: ObjectId},
+  author_id: { type: ObjectId },
+  topic_id: { type: ObjectId },
+  reply_id: { type: ObjectId },
+  has_read: { type: Boolean, default: false },
+  create_at: { type: Date, default: Date.now }
+});
+MessageSchema.plugin(BaseModel);
+MessageSchema.index({master_id: 1, has_read: -1, create_at: -1});
+mongoose.model('Message', MessageSchema);
+
+/**
+ * 根据用户ID，获取已读消息列表
+ * Callback:
+ * - err, 数据库异常
+ * - messages, 消息列表
+ * @param {String} userId 用户ID
+ * @param {Function} callback 回调函数
+ */
+exports.getReadMessagesByUserId = function (userId, callback) {
+  Message.find({master_id: userId, has_read: true}, null,
+    {sort: '-create_at', limit: 20}, callback);
+};
+```
+
 ##### 事件和回调
 ```javascript
 var http = require('http');
@@ -108,14 +138,36 @@ npm -v
 
 建议安装依赖环境：python2.7， vistual studio2015，主要用于编译C++写的扩展包
 
+## API
+参考官网：https://nodejs.org/dist/latest-v8.x/docs/api/
+
 ## 实例
+
+经典的hello world
+```javascript
+const http = require('http');
+
+const hostname = '127.0.0.1';
+const port = 3000;
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World\n');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+```
+
 几行代码完成简单的http服务器：hello.js
 
 重构，加入可扩展性: app.js
 
 ## 常用的框架
 
-框架名称 | 特性 | 点评
+框架名称 | 特性 | 说明
 -- | -- | --
 Express	| 简单、实用，路由中间件等五脏俱全 | 最著名的Web框架
 Derby.js && Meteor | 同构	| 前后端都放到一起，模糊了开发便捷，看上去更简单，实际上上对开发来说要求更高

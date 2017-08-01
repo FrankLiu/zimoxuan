@@ -161,6 +161,31 @@ server.listen(port, hostname, () => {
 });
 ```
 
+用express实现
+```javascript
+var express = require('express')
+var app = express()
+
+app.get('/', function (req, res) {
+  res.send('Hello World')
+})
+
+app.listen(3000)
+```
+
+用koa实现
+```javascript
+const Koa = require('koa');
+const app = new Koa();
+
+// response
+app.use(ctx => {
+  ctx.body = 'Hello Koa';
+});
+
+app.listen(3000);
+```
+
 几行代码完成简单的http服务器：hello.js
 
 重构，加入可扩展性: app.js

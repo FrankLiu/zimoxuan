@@ -1,0 +1,44 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Document</title>
+  <style>
+    #ullist li { display: block;width: 40px; height: 40px;
+                border:1px solid #ccc; text-align: center;
+                line-height: 40px; cursor: pointer; float: left;
+                margin:10px;}
+  </style>
+</head>
+<body>
+  <ul id="ullist">
+    <li id="li1">1</li>
+    <li id="li2">2</li>
+    <li id="li3">3</li>
+    <li id="li4">4</li>
+    <li id="li5">5</li>
+  </ul>
+</body>
+<script>
+  function incorrectFn(i){
+    var ullist=document.getElementById("ullist");
+    var listE=document.getElementsByTagName("li");
+    for (var i=0; i<listE.length; i++){
+      listE[i].onclick = function(i){
+        console.log(listE[i].innerHTML);
+      }
+    }
+  }
+
+  function correctFn(){
+    var ullist=document.getElementById("ullist");
+    var listE=document.getElementsByTagName("li");
+    for (var i=0; i<listE.length; i++){
+      listE[i].onclick = function(i){
+        return function(){ console.log(listE[i].innerHTML);}
+      }(i);
+    }
+  }
+
+  window.onload = correctFn;
+</script>
+</html>

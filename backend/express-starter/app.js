@@ -8,9 +8,11 @@ var bodyParser = require('body-parser');
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
+var mongoose = require('mongoose');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var auth = require('./routes/auth');
 
 var app = express();
 
@@ -39,6 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.all('/users', isLoggedIn);
 app.use('/users', users);
+app.use('/auth', auth);
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated())

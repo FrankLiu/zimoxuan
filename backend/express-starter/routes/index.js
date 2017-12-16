@@ -13,19 +13,22 @@ router.get('/register', function(req, res, next){
 });
 
 router.post('/register', function(req, res, next){
+  console.log('registering user');
   Account.register(new Account({
-    username: req.body.username,
-    password: req.body.password,
-  }), function(err, result){
-    if(err) {
-      return res.render('register', {error: err.message});
-    }
-    passport.authenticate('local')(req, res, function(){
-      req.session.save(function(err){
-        if (err) { return next(err); }
-        res.redirect('/');
+    username: req.body.username}), 
+    req.body.password,
+    function(err, result){
+      if(err) {
+        console.log('error while user register!', err);
+        return res.render('register', {error: err.message});
+      }
+      console.log('user registered!');
+      passport.authenticate('local')(req, res, function(){
+        req.session.save(function(err){
+          if (err) { return next(err); }
+          res.redirect('/');
+        });
       });
-    });
   });
 });
 
@@ -66,6 +69,16 @@ router.post('/login',
       if (err) { return next(err) }
       res.redirect('/');
     });
+  }
+);
+
+router.get('/login/github', passport.authenticate('github'));
+
+router.get('/login/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home. 
+    res.redirect('/');
   }
 );
 

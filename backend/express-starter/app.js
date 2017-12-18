@@ -1,4 +1,5 @@
 var express = require('express');
+var nunjucks = require('nunjucks');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -18,9 +19,11 @@ var auth = require('./routes/auth');
 
 var app = express();
 
+nunjucks.configure('views', { autoescape: true, express: app });
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set('view engine', 'njk');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -56,7 +59,15 @@ passport.deserializeUser(Account.deserializeUser());
 passport.use(new GitHubStrategy(
   config.passport.github,
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ githubId: profile.id }, function (err, user) {
+    Account.findOne({ githubId: profile.id }, function (err, user) {
+      if (err) 
+        return cb(err);
+      
+      if (!user) {
+        user = Account.create({
+
+        });
+      }
       return cb(err, user);
     });
   }

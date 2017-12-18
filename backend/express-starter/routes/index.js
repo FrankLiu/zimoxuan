@@ -26,8 +26,8 @@ router.post('/register', function(req, res, next){
       passport.authenticate('local')(req, res, function(){
         req.session.save(function(err){
           if (err) { return next(err); }
-          res.redirect('/');
-        });
+          res.redirect('/profile');
+        });zxc
       });
   });
 });
@@ -67,7 +67,7 @@ router.post('/login',
   function(req, res, next){
     req.session.save(function(err){
       if (err) { return next(err) }
-      res.redirect('/');
+      res.redirect('/profile');
     });
   }
 );
@@ -81,6 +81,10 @@ router.get('/login/github/callback',
     res.redirect('/');
   }
 );
+
+router.get('/profile', function(req, res, next){
+  res.render('profile', {});
+});
 
 router.get('/logout', function(req, res, next){
   req.logout();

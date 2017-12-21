@@ -82,8 +82,8 @@ router.get('/login/github/callback',
   }
 );
 
-router.get('/profile', function(req, res, next){
-  res.render('profile', {});
+router.get('/profile', isLoggedIn,function(req, res, next){
+  res.render('profile', { user: req.user });
 });
 
 router.get('/logout', function(req, res, next){
@@ -97,5 +97,12 @@ router.get('/logout', function(req, res, next){
 router.get('/ping', function(req, res){
   res.status(200).send('pong');
 });
+
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated())
+      return next();
+
+  res.redirect('/');
+}
 
 module.exports = router;

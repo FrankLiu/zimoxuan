@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "node ./bin/www",
     "start": "nodemon ./bin/www",
     "stop": "echo \"not implemented!\""
   },
